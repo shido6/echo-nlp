@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Management — ask your phone business | EchoGuard.ca</title>
+<meta name="description" content="The management view of your phone business: ask in plain language, live panes, zero hunting. There's no one to call — we're the cavalry.">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg-soft: #10161f;
+    --panel: #141c28;
+    --line: #243042;
+    --ink: #e8eef6;
+    --muted: #8b98ab;
+    --accent: #38bdf8;
+    --accent-deep: #0284c7;
+    --good: #34d399;
+    --warn: #fbbf24;
+    --bad: #f87171;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10, 14, 20, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  nav .links { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+  nav .links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav .links a:hover, nav .links a.on { color: var(--ink); }
+
+  header.hero { padding: 80px 0 56px; text-align: center; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px; font-weight: 700; color: var(--accent); margin: 0 0 18px; }
+  h1 { font-size: clamp(36px, 5.6vw, 60px); line-height: 1.08; letter-spacing: -0.025em; margin: 0 0 22px; }
+  .sub { font-size: clamp(17px, 2.2vw, 21px); color: var(--muted); max-width: 680px; margin: 0 auto 20px; }
+  .cavalry-line { font-size: clamp(19px, 2.6vw, 26px); font-weight: 700; color: var(--ink); margin: 26px auto 0; max-width: 620px; }
+  .cavalry-line em { color: var(--good); font-style: normal; }
+
+  section { padding: 64px 0; }
+  section.soft { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  h2 { font-size: clamp(26px, 3.6vw, 36px); letter-spacing: -0.02em; margin: 0 0 14px; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 640px; margin: 0 0 36px; }
+  .center { text-align: center; }
+  .center .lede { margin-left: auto; margin-right: auto; }
+
+  .console {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+    padding: 28px; max-width: 780px; margin: 0 auto;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  }
+  .answer-head { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+  .answer p { margin: 0 0 12px; }
+  .fine { color: var(--muted); font-size: 13px; text-align: center; margin: 18px 0 0; }
+  .raw { color: var(--muted); font-size: 14px; }
+
+  .ask-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .ask-row input {
+    flex: 1; min-width: 220px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+    color: var(--ink); padding: 16px 18px; font-size: 17px; outline: none;
+  }
+  .ask-row input:focus { border-color: var(--accent); }
+  .btn {
+    display: inline-block; padding: 15px 28px; border-radius: 10px;
+    font-weight: 700; font-size: 16px; text-decoration: none; cursor: pointer; border: 0;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #04121d; }
+  .btn-primary:hover { background: #7dd3fc; }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn-ghost:hover { background: rgba(56, 189, 248, 0.12); }
+  .suggest { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+  .suggest button {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 999px;
+    color: var(--muted); padding: 8px 16px; font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .suggest button:hover { color: var(--ink); border-color: var(--accent); }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+  .tile-num { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .tile-num.good { color: var(--good); }
+  .tile-num.bad { color: var(--bad); }
+  .tile-num.warn { color: var(--warn); }
+  .tile-label { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+  .pane { max-width: 900px; margin: 0 auto 40px; }
+  .pane-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+  .pane-head h3 { margin: 0; font-size: 20px; }
+  .pane-head .pane-sub { color: var(--muted); font-size: 14px; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  table.rows { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.rows th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  table.rows td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.rows tr:last-child td { border-bottom: 0; }
+  .status-ok { color: var(--good); font-weight: 600; }
+  .status-bad { color: var(--bad); font-weight: 600; }
+  .status-mut { color: var(--muted); }
+  .delta { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+  .ladder { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .ladder th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  .ladder td { padding: 8px 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  .ladder tr:first-child td { background: rgba(56, 189, 248, 0.06); }
+
+  .expert-toggle { display: flex; align-items: center; gap: 12px; justify-content: center; margin: 8px 0 0; }
+  .expert-toggle label { color: var(--muted); font-size: 14px; cursor: pointer; }
+  .expert-toggle input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+  .expert { display: none; }
+  .expert.on { display: block; }
+  .query-block {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 14px; margin: 8px 0; overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px; color: var(--muted);
+  }
+  .query-block b { color: var(--accent); font-weight: 600; }
+
+  .cavalry { max-width: 720px; margin: 0 auto; text-align: center; }
+  .cavalry h2 { font-size: clamp(28px, 4.4vw, 42px); }
+  .cavalry p { color: var(--muted); font-size: 17px; }
+  .cavalry .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px; font-size: 14px; color: var(--muted); }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  footer a { color: var(--muted); }
+
+  .ev { display: flex; gap: 14px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; align-items: baseline; }
+  .ev:last-child { border-bottom: 0; }
+  .ev-time { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; flex: 0 0 62px; }
+  .ev-what { color: var(--ink); font-weight: 600; flex: 0 0 130px; }
+  .ev-detail { color: var(--muted); flex: 1; word-break: break-word; }
+
+  /* the correlation visual — the HEPIC picture: every
+     call a vertical ladder, both directions, color
+     coded by status, milliseconds between rungs */
+  .corr { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-top: 14px; }
+  .corr-head { padding: 9px 14px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); background: rgba(139, 152, 171, 0.05); }
+  .corr-head .mono { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .corr-rung { display: flex; gap: 12px; align-items: baseline; padding: 7px 14px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .corr-rung:last-child { border-bottom: 0; }
+  .corr-dir { flex: 0 0 14px; text-align: center; font-weight: 800; }
+  .corr-time { flex: 0 0 60px; color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .corr-what { flex: 0 0 118px; font-weight: 700; }
+  .corr-detail { flex: 1; color: var(--muted); word-break: break-word; min-width: 0; }
+  .corr-delta { flex: 0 0 76px; text-align: right; color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .corr-req .corr-dir { color: var(--accent); }
+  .corr-ok { background: rgba(52, 211, 153, 0.06); }
+  .corr-ok .corr-dir { color: var(--good); }
+  .corr-bad { background: rgba(248, 113, 113, 0.08); }
+  .corr-bad .corr-dir { color: var(--bad); }
+  .corr-mut .corr-dir { color: var(--muted); }
+
+  /* the correlation diagram — a sequence diagram: every
+     message an arrow between lifelines, colored by status,
+     milliseconds from call start down the left ruler */
+  .corr-svg { width: 100%; height: auto; display: block; background: rgba(139, 152, 171, 0.03); }
+  .corr-rail { stroke: #223047; stroke-width: 2; }
+  .corr-rail-label { fill: #8b98ab; font-size: 12.5px; font-weight: 700; }
+  .corr-arrow { stroke-width: 2.5; fill: none; }
+  .corr-arrow.corr-req { stroke: #38bdf8; }
+  .corr-arrow.corr-ok { stroke: #34d399; }
+  .corr-arrow.corr-bad { stroke: #f87171; }
+  .corr-arrow.corr-mut { stroke: #8b98ab; }
+  .corr-msg { font-size: 12px; font-weight: 700; }
+  .corr-msg.corr-req { fill: #38bdf8; }
+  .corr-msg.corr-ok { fill: #34d399; }
+  .corr-msg.corr-bad { fill: #f87171; }
+  .corr-msg.corr-mut { fill: #8b98ab; }
+  .corr-axis { fill: #8b98ab; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .corr-raw { border-top: 1px solid var(--line); }
+  .corr-raw summary { padding: 7px 14px; font-size: 12px; color: var(--muted); cursor: pointer; }
+
+  /* the voice lane — push to talk, answers speak back */
+  .voice-btn { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--muted); padding: 12px 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .voice-btn:hover { color: var(--ink); border-color: var(--accent); }
+  .voice-btn.listening { color: var(--bad); border-color: var(--bad); animation: pulse 1s infinite; }
+  .voice-btn.on { color: var(--accent); border-color: var(--accent); }
+
+  .src-line { margin: 8px 0 0; }
+  .chip { display: inline-block; font-size: 12px; font-weight: 600;
+          letter-spacing: .04em; text-transform: uppercase;
+          padding: 3px 9px; border-radius: 999px; }
+  .chip-records { color: var(--muted); border: 1px solid var(--line); }
+  .read-block { margin-top: 10px; padding: 12px 14px;
+                background: var(--bg-soft); border: 1px solid var(--line);
+                border-left: 3px solid var(--accent); border-radius: 8px; }
+  .chip-read { color: var(--accent); border: 1px solid var(--accent);
+               margin-bottom: 6px; }
+  .read { margin: 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .ev { flex-wrap: wrap; gap: 4px; }
+    .ev-what { flex: 1 1 100%; }
+    .tile-num { font-size: 24px; }
+  }
+</style>
+
+<style id="mobile-nav-b">/* MOBILE-NAV-B */
+
+@media (max-width: 900px) {
+  nav .wrap { flex-wrap: wrap; height: auto; padding: 10px 0; gap: 10px; }
+  nav .links { order: 3; width: 100%; margin-left: 0; display: flex; flex-wrap: nowrap;
+    gap: 8px; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  nav .links::-webkit-scrollbar { display: none; }
+  nav .links a { flex: 0 0 auto; font-size: 13px; line-height: 1.1; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px;
+    white-space: nowrap; }
+  nav .links a.on { color: var(--accent); border-color: var(--accent); }
+  nav .links a:hover { color: var(--ink); border-color: var(--muted); }
+  table.compare, table.rows { display: block; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html">Echo<span>.</span></a>
+    <div class="links">
+      <a href="index.html#interface">In action</a>
+      <a href="index.html#examples">Examples</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#platforms">Platforms</a>
+      <a href="assist.html">Live Assist</a>
+      <a href="manage.html" class="on">Management</a>
+      <a href="greg.html">Meet Greg</a>
+      <a href="forge.html">Forge</a>
+      <a href="https://relay.echoguard.ca/">Relay</a>
+      <a href="https://voip.echoguard.ca/order.html">Pricing</a>
+      <a href="login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">From EchoGuard.ca</p>
+    <h1>The management view.</h1>
+    <p class="sub">Your whole phone business in plain language. One ask box, live panes, zero hunting &mdash; no dashboards to build, no clicks to babysit.</p>
+    <p class="cavalry-line">There&rsquo;s no one to call. <em>We&rsquo;re the cavalry.</em></p>
+  </div>
+</header>
+
+<section id="ask">
+  <div class="wrap">
+    <div class="center">
+      <h2>Ask. Don&rsquo;t click.</h2>
+      <p class="lede">Type it like you&rsquo;d say it. The answer comes back in plain language, with the events behind it.</p>
+    </div>
+    <div class="console">
+      <div class="answer-head">Ask your phone business</div>
+      <div class="answer">
+        <div class="ask-row">
+          <input id="ask-input" type="text" placeholder="How did calls do today?" autocomplete="off">
+          <button class="btn btn-primary" id="ask-go">Ask</button>
+          <button id="voice-btn" class="voice-btn" type="button" title="Talk your question" aria-label="Talk your question" hidden>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+          <button id="voice-out" class="voice-btn" type="button" title="Speak answers aloud" aria-label="Speak answers aloud" aria-pressed="false" hidden>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </button>
+        </div>
+        <div class="suggest">
+          <button data-q="How did calls do today?">How did calls do today?</button>
+          <button data-q="Any failed calls?">Any failed calls?</button>
+          <button data-q="Is anything broken?">Is anything broken?</button>
+          <button data-q="How much did we make?">How much did we make?</button>
+          <button data-q="Who is talking?">Who is talking?</button>
+          <button data-q="What is the latest?">What is the latest?</button>
+        </div>
+        <p id="ask-answer" class="q" style="margin-top:18px" aria-live="polite">Ask anything &mdash; the panes below just live.</p>
+        <div class="src-line" id="ask-src" hidden><span class="chip chip-records">From your system's records</span></div>
+        <div class="read-block" id="ask-read-wrap" hidden>
+          <span class="chip chip-read">Greg's read</span>
+          <p class="read" id="ask-read" aria-live="polite"></p>
+        </div>
+        <div id="ask-events"></div>
+        <div id="ask-corr"></div>
+        <p class="fine">Logic first, then the answer &mdash; every query is built the same careful way, every time. Answers read your own phone-system telemetry; the engine is gentle by design (cached, one attempt, no retries). Voice: push the mic and talk your question &mdash; answers can speak back; voice uses your browser&rsquo;s built-in speech service, audio stays between you and your browser.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="panes" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>The live panes</h2>
+      <p class="lede">No tabs, no drill-downs. Every pane just sits there, fresh every ten seconds.</p>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="live-dot" aria-hidden="true"></span><h3>Network pulse</h3>
+        <span class="pane-sub">the last hour, from your signaling stream</span>
+      </div>
+      <div class="tiles" id="network-tiles">
+        <div class="tile"><div class="tile-num" id="n-calls">—</div><div class="tile-label">Call attempts &middot; 1h</div></div>
+        <div class="tile"><div class="tile-num good" id="n-ok">—</div><div class="tile-label">Connected &middot; 1h</div></div>
+        <div class="tile"><div class="tile-num bad" id="n-fail">—</div><div class="tile-label">Failed &middot; 1h</div></div>
+        <div class="tile"><div class="tile-num" id="n-done">—</div><div class="tile-label">Completed &middot; 1h</div></div>
+        <div class="tile"><div class="tile-num" id="n-setup">—</div><div class="tile-label">Avg setup time</div></div>
+        <div class="tile"><div class="tile-num" id="n-check">—</div><div class="tile-label">Check-ins &middot; 1h</div></div>
+      </div>
+      <div class="expert" id="q-network">
+        <div class="query-block"><b>call attempts</b> · sum(count_over_time({job="hep", method="INVITE"}[1h]))<br><b>connected</b> · sum(count_over_time({job="hep"} |~ "SIP/2.0 200"[1h]))<br><b>failed</b> · sum(count_over_time({job="hep"} |~ "SIP/2.0 [45]"[1h]))<br><b>completed</b> · sum(count_over_time({job="hep"} |= "BYE"[1h]))<br><b>setup time</b> · INVITE&rarr;200 OK per call ID, recent window</div>
+      </div>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="live-dot" aria-hidden="true"></span><h3>Money</h3>
+        <span class="pane-sub">orders, from the order stream &mdash; as they happen</span>
+      </div>
+      <div class="tiles" style="margin-bottom:16px">
+        <div class="tile"><div class="tile-num" id="m-orders">—</div><div class="tile-label">Orders &middot; 24h</div></div>
+        <div class="tile" style="grid-column: span 2"><div class="tile-label" style="margin-top:0">By item</div><div id="m-bysku" class="chips" style="margin-top:8px"></div></div>
+      </div>
+      <div id="m-latest"></div>
+      <div id="m-catalog" style="margin-top:14px"></div>
+      <div class="expert" id="q-money">
+        <div class="query-block"><b>orders</b> · sum(count_over_time({job="orders"}[24h]))<br><b>by item</b> · sum by (sku) (count_over_time({job="orders"}[24h]))<br>each order event carries the full order record (sku, urgency, amount)</div>
+      </div>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="live-dot" aria-hidden="true"></span><h3>Phone systems</h3>
+        <span class="pane-sub">the capture points connected to your stream</span>
+      </div>
+      <table class="rows">
+        <thead><tr><th>System</th><th>Platform</th><th>Status</th><th>Last signal</th><th>Events</th></tr></thead>
+        <tbody id="s-body"><tr><td colspan="5" class="status-mut">Loading&hellip;</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="live-dot" aria-hidden="true"></span><h3>Services pipeline</h3>
+        <span class="pane-sub">jobs the order path has written &mdash; urgency, entitlements, quotes</span>
+      </div>
+      <div class="tiles" style="margin-bottom:16px">
+        <div class="tile"><div class="tile-num" id="p-total">—</div><div class="tile-label">Jobs on record</div></div>
+        <div class="tile"><div class="tile-num warn" id="p-free">—</div><div class="tile-label">Free fixes outstanding</div></div>
+        <div class="tile"><div class="tile-num" id="p-quotes">—</div><div class="tile-label">Quotes required</div></div>
+        <div class="tile" style="grid-column: span 2"><div class="tile-label" style="margin-top:0">Urgency mix</div><div id="p-urgency" class="chips" style="margin-top:8px"></div></div>
+      </div>
+      <div id="p-latest"></div>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="live-dot" aria-hidden="true"></span><h3>The cavalry&rsquo;s trail</h3>
+        <span class="pane-sub">assists closed, with wrap-up codes &mdash; the audit trail</span>
+      </div>
+      <div id="a-body"></div>
+    </div>
+  </div>
+</section>
+
+<section id="expert-lane">
+  <div class="wrap">
+    <div class="center">
+      <h2>The expert lane</h2>
+      <p class="lede">For the ones who geek out. Still asking, not hunting &mdash; but with the receipts and the raw stack one toggle away.</p>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="live-dot" aria-hidden="true"></span><h3>The session ladder</h3>
+        <span class="pane-sub">every message in one call, with the time since the first</span>
+      </div>
+      <div class="console">
+        <div class="answer">
+          <div class="ask-row">
+            <input id="ladder-input" type="text" placeholder="Call ID (corr-id) from the stream" autocomplete="off" class="mono">
+            <button class="btn btn-ghost" id="ladder-go">Show the ladder</button>
+          </div>
+          <div id="ladder-body" style="margin-top:14px"><p class="raw">Grab a call ID from the stream &mdash; or ask &ldquo;show me the last call&rdquo; and take the top call ID from the events.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="console" style="max-width:780px;margin:0 auto">
+      <div class="answer-head">Expert mode</div>
+      <div class="expert-toggle">
+        <input type="checkbox" id="expert-check">
+        <label for="expert-check">Show the exact queries behind every number, and the API behind every pane</label>
+      </div>
+      <div class="expert" id="expert-all">
+        <p class="raw" style="margin-top:14px">Every pane is a query against the capture store. Every number above is reproducible &mdash; here is the LogQL behind the network pulse and the money pane. The full API:</p>
+        <div class="query-block"><b>GET /api/manage</b> · the whole management view, composed<br><b>GET /api/manage/call?call_id=&lt;id&gt;</b> · the session ladder<br><b>POST /api/query</b> · {"q": "how did calls do today?"}<br><b>GET /api/assist/context</b> · the operator context pane</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>Honest markers</h2>
+      <p class="lede">What this view does not show yet &mdash; and what it takes to show it.</p>
+    </div>
+    <div class="tiles" style="max-width:900px;margin:0 auto">
+      <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">Voice quality (MOS)</h3><p style="margin:0;color:var(--muted);font-size:14px">Ships with media capture. Today&rsquo;s stream is signaling only &mdash; quality scoring arrives with RTP/RTCP-XR.</p></div>
+      <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">NPS, CLV, ARPU, CSAT</h3><p style="margin:0;color:var(--muted);font-size:14px">These live in your CRM and billing. Connect them and the panes light up &mdash; not connected today.</p></div>
+      <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">Call duration</h3><p style="margin:0;color:var(--muted);font-size:14px">Derived from BYE timing, per call ID &mdash; shown once a call ends.</p></div>
+      <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">Geography</h3><p style="margin:0;color:var(--muted);font-size:14px">Caller geography from public area-code data &mdash; the intel pane on Live Assist.</p></div>
+      <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">Carrier billing</h3><p style="margin:0;color:var(--muted);font-size:14px">Usage lives in carrier CDRs &mdash; connect them and revenue assurance (carrier bill vs. usage, errors caught) lights up. Not connected today.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cavalry">
+  <div class="wrap">
+    <h2>There&rsquo;s no one to call.<br>We&rsquo;re the cavalry.</h2>
+    <p>When a phone system breaks, the carrier points at the PBX, the PBX vendor points at the carrier, and the forum answer is from 2014. We&rsquo;re the call. Greg arrives first &mdash; answers, diagnoses, hands over the evidence. Live Assist puts a human on the line in seconds: listen, whisper, barge. We put out the fires. We do the healing. Top-tier white-glove support, built in &mdash; not a separate contract, not a queue.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://voip.echoguard.ca/order.html#keeper">The Keeper &mdash; $750/mo</a>
+      <a class="btn btn-ghost" href="https://voip.echoguard.ca/order.html#full-shift">The Full Shift &mdash; $999/mo</a>
+      <a class="btn btn-ghost" href="mailto:kaiel@echoguard.ca?subject=EchoGuard%20%E2%80%94%20talk%20to%20the%20cavalry">Talk to the cavalry</a>
+    </div>
+  </div>
+</section>
+
+<section class="soft" style="padding:40px 0">
+  <div class="wrap">
+    <div class="center">
+      <p class="lede" style="margin-bottom:0">Built on the open SIP-capture stack &mdash; HEP agents on your phone system, an open capture store, and plain-language queries. Your data stays on your side of the boundary. No per-seat observability module.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Echo by <a href="https://echoguard.ca">EchoGuard Communications</a> &mdash; the management view, in plain language.</span>
+    <span>echo.echoguard.ca</span> <span style="opacity:.55">&middot;</span> <a href="/login.html" style="color:inherit;text-decoration:none;">Beta sign in</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var askInput = document.getElementById('ask-input');
+  var askAnswer = document.getElementById('ask-answer');
+  var askEvents = document.getElementById('ask-events');
+  var askSrc = document.getElementById('ask-src');
+  var askReadWrap = document.getElementById('ask-read-wrap');
+  var askRead = document.getElementById('ask-read');
+  var expertOn = false;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function fmtClock(ts) {
+    return new Date(ts * 1000).toLocaleTimeString([], { hour12: false });
+  }
+  function fmtMoney(cents) {
+    return "$" + Number(cents || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
+
+  function ask(q) {
+    if (!q) { return; }
+    askAnswer.textContent = "Asking…";
+    askEvents.innerHTML = "";
+    askSrc.hidden = true;
+    askReadWrap.hidden = true;
+    fetch("/api/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: q })
+    }).then(function (r) {
+      if (r.status === 401) {
+        askAnswer.textContent = "Sign in to ask.";
+        askEvents.innerHTML = '<p class="raw"><a href="login.html">Beta sign in</a> &mdash; answers read your own telemetry.</p>';
+        return null;
+      }
+      return r.json();
+    }).then(function (d) {
+      if (!d) { return; }
+      askAnswer.textContent = d.answer || "No answer.";
+      askSrc.hidden = !d.records;
+      if (d.read) {
+        askRead.textContent = d.read;
+        askReadWrap.hidden = false;
+      } else {
+        askReadWrap.hidden = true;
+      }
+      if (d.engine === "llm") {
+        askAnswer.textContent += "  ·  (the AI read it — the rules engine agrees when it can)";
+      }
+      if (d.engine === "rules" && d.ai && d.ai.state === "rate_limited") {
+        askAnswer.textContent += "  ·  (the AI reader is resting after a rate limit — the rules engine answered)";
+      }
+      if (d.events && d.events.length) {
+        askEvents.innerHTML = d.events.map(function (e) {
+          return '<div class="ev"><span class="ev-time">' + esc(e.time) + '</span>' +
+                 '<span class="ev-what">' + esc(e.what) + '</span>' +
+                 '<span class="ev-detail">' + esc(e.detail) + '</span></div>';
+        }).join("");
+      }
+      renderDialogs(d.dialogs || [], 'ask-corr');
+      speak((d.answer || "") + (d.read ? " Greg's read: " + d.read : ""));
+    }).catch(function () {
+      askAnswer.textContent = "The answer engine is unreachable right now — the panes below still live.";
+    });
+  }
+
+  document.getElementById('ask-go').addEventListener('click', function () { ask(askInput.value.trim()); });
+  askInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { ask(askInput.value.trim()); }
+  });
+  document.querySelectorAll('.suggest button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      askInput.value = b.getAttribute('data-q');
+      ask(b.getAttribute('data-q'));
+    });
+  });
+
+  // The correlation visual — the HEPIC picture, drawn
+  // as a sequence diagram: every message an arrow between
+  // lifelines, colored by status, with the milliseconds
+  // from call start down the left ruler. The raw ladder
+  // stays one click away for text mode.
+  var svgSeq = 0;
+  function rungClass(what) {
+    var w = String(what || "").toLowerCase();
+    if (w.indexOf("reply") !== 0) { return "corr-req"; }
+    if (/\b2\d\d\b/.test(w)) { return "corr-ok"; }
+    if (/\b[45]\d\d\b/.test(w)) { return "corr-bad"; }
+    return "corr-mut";
+  }
+  function dialogSvg(dlg) {
+    var rungs = dlg.ladder;
+    svgSeq += 1;
+    var uid = "h" + svgSeq;
+    // lifelines: the endpoints of the dialog, in the
+    // order they first speak
+    var rails = [];
+    rungs.forEach(function (r) {
+      var m = /^from (.*?) to (.*?)$/.exec(r.detail || "");
+      if (m) {
+        if (rails.indexOf(m[1]) < 0) { rails.push(m[1]); }
+        if (rails.indexOf(m[2]) < 0) { rails.push(m[2]); }
+      }
+    });
+    if (rails.length < 2) { rails = ["this side", "the other side"]; }
+    var rowH = 46, top = 58, left = 148, right = 118, w = 760;
+    var h = top + rungs.length * rowH + 16;
+    var xs = rails.map(function (_, i) {
+      if (rails.length === 1) { return w / 2; }
+      return left + (w - left - right) * i / (rails.length - 1);
+    });
+    var p = [];
+    p.push('<svg viewBox="0 0 ' + w + ' ' + h + '" class="corr-svg" role="img" aria-label="Call correlation diagram, ' + esc(dlg.call_id) + '">');
+    p.push('<defs>' +
+      '<marker id="a-req-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#38bdf8"/></marker>' +
+      '<marker id="a-ok-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#34d399"/></marker>' +
+      '<marker id="a-bad-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#f87171"/></marker>' +
+      '<marker id="a-mut-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b98ab"/></marker>' +
+      '</defs>');
+    rails.forEach(function (name, i) {
+      p.push('<line x1="' + xs[i] + '" y1="' + (top - 16) + '" x2="' + xs[i] + '" y2="' + (h - 10) + '" class="corr-rail"/>');
+      p.push('<text x="' + xs[i] + '" y="' + (top - 26) + '" class="corr-rail-label" text-anchor="middle">' + esc(name) + '</text>');
+    });
+    rungs.forEach(function (r, i) {
+      var y = top + i * rowH + rowH / 2;
+      var cls = rungClass(r.what);
+      var m = /^from (.*?) to (.*?)$/.exec(r.detail || "");
+      var from = m ? rails.indexOf(m[1]) : 0;
+      var to = m ? rails.indexOf(m[2]) : (rails.length > 1 ? 1 : 0);
+      if (from < 0) { from = 0; }
+      if (to < 0) { to = 1 % rails.length; }
+      var x1 = xs[from];
+      var x2 = xs[to];
+      var mark = 'url(#a-' + cls.slice(5) + '-' + uid + ')';
+      if (from === to) {
+        p.push('<path d="M ' + x1 + ' ' + y + ' c 16 -12 30 -12 30 0 c 0 12 -14 12 -30 0" class="corr-arrow ' + cls + '" marker-end="' + mark + '"/>');
+      } else {
+        p.push('<line x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '" class="corr-arrow ' + cls + '" marker-end="' + mark + '"/>');
+      }
+      p.push('<text x="' + ((x1 + x2) / 2) + '" y="' + (y - 7) + '" class="corr-msg ' + cls + '" text-anchor="middle">' + esc(r.what) + '</text>');
+      p.push('<text x="8" y="' + (y + 4) + '" class="corr-axis">' + esc(r.time) + '  +' + (r.delta_ms || 0).toLocaleString() + ' ms</text>');
+    });
+    p.push('</svg>');
+    return p.join("");
+  }
+  function renderDialogs(dialogs, mountId) {
+    var box = document.getElementById(mountId);
+    if (!box) { return; }
+    if (!dialogs || !dialogs.length) { box.innerHTML = ""; return; }
+    box.innerHTML = dialogs.map(function (dlg) {
+      if (dlg.error || !dlg.ladder || !dlg.ladder.length) { return ""; }
+      var rows = dlg.ladder.map(function (r) {
+        return '<div class="corr-rung ' + rungClass(r.what) + '">' +
+          '<span class="corr-time">' + esc(r.time) + '</span>' +
+          '<span class="corr-what">' + esc(r.what) + '</span>' +
+          '<span class="corr-detail">' + esc(r.detail) + '</span>' +
+          '<span class="corr-delta">+' + (r.delta_ms || 0).toLocaleString() + ' ms</span></div>';
+      }).join("");
+      return '<div class="corr"><div class="corr-head">Call correlation' +
+        ' <span class="mono">' + esc(dlg.call_id) + '</span> · ' +
+        dlg.messages + ' messages over ' + (dlg.window_ms / 1000).toFixed(1) +
+        's</div>' + dialogSvg(dlg) +
+        '<details class="corr-raw"><summary>the raw ladder</summary>' + rows + '</details></div>';
+    }).join("");
+  }
+
+  // The voice lane — the TNG-computer interaction: push
+  // to talk, the answer speaks back. Client-side Web
+  // Speech API; audio stays between you and your
+  // browser's speech service. Spoken answers also make
+  // the console usable without looking at a screen.
+  var voiceOut = false;
+  var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recog = null;
+  var voiceBtn = document.getElementById('voice-btn');
+  var voiceOutBtn = document.getElementById('voice-out');
+  if (SpeechRec && voiceBtn) {
+    recog = new SpeechRec();
+    recog.lang = 'en-US';
+    recog.interimResults = false;
+    recog.maxAlternatives = 1;
+    voiceBtn.hidden = false;
+    recog.onresult = function (e) {
+      var t = e.results[0][0].transcript;
+      askInput.value = t;
+      ask(t);
+    };
+    recog.onend = function () { voiceBtn.classList.remove('listening'); };
+    recog.onerror = function () { voiceBtn.classList.remove('listening'); };
+    voiceBtn.addEventListener('click', function () {
+      if (!recog) { return; }
+      voiceBtn.classList.add('listening');
+      try { recog.start(); } catch (err) { voiceBtn.classList.remove('listening'); }
+    });
+  }
+  if ('speechSynthesis' in window && voiceOutBtn) {
+    voiceOutBtn.hidden = false;
+    voiceOutBtn.addEventListener('click', function () {
+      voiceOut = !voiceOut;
+      voiceOutBtn.classList.toggle('on', voiceOut);
+      voiceOutBtn.setAttribute('aria-pressed', voiceOut ? 'true' : 'false');
+      if (!voiceOut) { speechSynthesis.cancel(); }
+    });
+  }
+  function speak(text) {
+    if (!voiceOut || !text || !('speechSynthesis' in window)) { return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+  }
+
+  function renderTiles(d) {
+    var n = d.network;
+    document.getElementById('n-calls').textContent = n.calls_1h;
+    document.getElementById('n-ok').textContent = n.connected_1h;
+    document.getElementById('n-fail').textContent = n.failed_1h;
+    document.getElementById('n-done').textContent = n.completed_1h;
+    document.getElementById('n-setup').textContent =
+      n.avg_setup_ms === null || n.avg_setup_ms === undefined ? "—" : n.avg_setup_ms + " ms";
+    document.getElementById('n-check').textContent = n.checkins_1h;
+
+    var m = d.money;
+    document.getElementById('m-orders').textContent = m.orders_24h;
+    var bySku = document.getElementById('m-bysku');
+    if (m.by_sku && Object.keys(m.by_sku).length) {
+      bySku.innerHTML = Object.keys(m.by_sku).map(function (sku) {
+        return '<span class="chip">' + esc(sku) + ' · ' + m.by_sku[sku] + '</span>';
+      }).join('');
+    } else {
+      bySku.innerHTML = '<span class="chip">No orders in the window — orders appear here as they happen.</span>';
+    }
+    var latest = document.getElementById('m-latest');
+    if (m.latest && m.latest.length) {
+      latest.innerHTML = '<table class="rows"><thead><tr><th>Time</th><th>Item</th><th>Urgency</th><th>Who</th></tr></thead><tbody>' +
+        m.latest.map(function (o) {
+          return '<tr><td class="mono">' + esc(o.time) + '</td><td>' + esc(o.sku) + '</td>' +
+                 '<td>' + esc(o.urgency) + '</td><td>' + esc(o.name) + (o.phone ? ' · ' + esc(o.phone) : '') + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    } else {
+      latest.innerHTML = '<p class="raw">No orders in the last 24 hours. The moment one lands, it is here.</p>';
+    }
+    var cat = document.getElementById('m-catalog');
+    cat.innerHTML = '<p class="raw" style="margin-bottom:8px">The catalog:</p><div class="chips">' +
+      m.catalog.map(function (c) {
+        var price = c.mode === "subscription"
+          ? fmtMoney(c.amount) + "/mo"
+          : fmtMoney(c.amount);
+        return '<span class="chip">' + esc(c.name) + ' — ' + price + '</span>';
+      }).join('') + '</div>';
+
+    var s = d.systems;
+    var body = document.getElementById('s-body');
+    if (s.systems && s.systems.length) {
+      body.innerHTML = s.systems.map(function (sys) {
+        var st = sys.status === "live" ? '<span class="status-ok">live</span>'
+          : '<span class="status-mut">' + esc(sys.status) + '</span>';
+        var ago = sys.last_hep ? fmtClock(sys.last_hep) : "never";
+        return '<tr><td>' + esc(sys.name) + '</td><td>' + esc(sys.platform) + '</td><td>' + st +
+               '</td><td class="mono">' + ago + '</td><td>' + sys.events.toLocaleString() + '</td></tr>';
+      }).join('');
+    } else {
+      body.innerHTML = '<tr><td colspan="5" class="status-mut">No capture points yet — connect one from the Echo console.</td></tr>';
+    }
+
+    var p = d.pipeline;
+    document.getElementById('p-total').textContent = p.total;
+    document.getElementById('p-free').textContent = p.free_fix_outstanding;
+    document.getElementById('p-quotes').textContent = p.quotes_required;
+    var urg = document.getElementById('p-urgency');
+    if (p.urgency && Object.keys(p.urgency).length) {
+      urg.innerHTML = Object.keys(p.urgency).map(function (u) {
+        return '<span class="chip">' + esc(u) + ' · ' + p.urgency[u] + '</span>';
+      }).join('');
+    } else {
+      urg.innerHTML = '<span class="chip">No jobs on record yet.</span>';
+    }
+    var pl = document.getElementById('p-latest');
+    if (p.latest && p.latest.length) {
+      pl.innerHTML = '<table class="rows"><thead><tr><th>Job</th><th>Item</th><th>Urgency</th><th>Who</th></tr></thead><tbody>' +
+        p.latest.map(function (j) {
+          return '<tr><td class="mono">' + esc(j.order_id) + '</td><td>' + esc(j.sku) + '</td>' +
+                 '<td>' + esc(j.urgency) + '</td><td>' + esc(j.name) + (j.phone ? ' · ' + esc(j.phone) : '') + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    } else {
+      pl.innerHTML = '<p class="raw">No jobs yet. Every order writes one.</p>';
+    }
+
+    var a = d.assists && d.assists.recent;
+    var ab = document.getElementById('a-body');
+    if (a && a.length) {
+      ab.innerHTML = '<table class="rows"><thead><tr><th>Time</th><th>Operator</th><th>Code</th><th>Note</th></tr></thead><tbody>' +
+        a.map(function (w) {
+          return '<tr><td class="mono">' + fmtClock(w.ts) + '</td><td>' + esc(w.user) + '</td>' +
+                 '<td>' + esc(w.code) + '</td><td>' + esc(w.note || "—") + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    } else {
+      ab.innerHTML = '<p class="raw">No assists closed yet. When a human takes a call, the wrap-up lands here.</p>';
+    }
+  }
+
+  function renderAll() {
+    fetch('/api/manage').then(function (r) {
+      if (r.status === 401) {
+        document.getElementById('network-tiles').innerHTML =
+          '<div class="tile" style="grid-column:1/-1"><p class="raw" style="margin:0"><a href="login.html">Beta sign in</a> to see the management view — every pane reads your own streams.</p></div>';
+        return null;
+      }
+      return r.json();
+    }).then(function (d) {
+      if (d) { renderTiles(d); }
+    }).catch(function () {
+      document.getElementById('n-calls').textContent = "—";
+    });
+  }
+
+  function showLadder(d) {
+    var body = document.getElementById('ladder-body');
+    if (!d) { return; }
+    if (d.error) {
+      body.innerHTML = '<p class="raw">' + esc(d.error) + '</p>';
+      return;
+    }
+    var html = '<p class="raw" style="margin-bottom:8px">Call <span class="mono">' + esc(d.call_id) + '</span> · ' +
+      d.messages + ' messages over ' + (d.window_ms / 1000).toFixed(1) + 's</p>';
+    html += '<table class="ladder"><thead><tr><th>Time</th><th>&Delta;</th><th>Message</th><th>Flow</th></tr></thead><tbody>';
+    html += d.ladder.map(function (row) {
+      return '<tr><td class="mono">' + esc(row.time) + '</td>' +
+             '<td class="delta">+' + row.delta_ms.toLocaleString() + ' ms</td>' +
+             '<td>' + esc(row.what) + '</td><td>' + esc(row.detail) + '</td></tr>';
+    }).join('');
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  function ladder() {
+    var cid = document.getElementById('ladder-input').value.trim();
+    if (!cid) { return; }
+    fetch('/api/manage/call?call_id=' + encodeURIComponent(cid)).then(function (r) {
+      if (r.status === 401) {
+        document.getElementById('ladder-body').innerHTML =
+          '<p class="raw"><a href="login.html">Beta sign in</a> to see call ladders.</p>';
+        return null;
+      }
+      return r.json();
+    }).then(showLadder).catch(function () {
+      document.getElementById('ladder-body').innerHTML = '<p class="raw">The store is unreachable right now.</p>';
+    });
+  }
+  document.getElementById('ladder-go').addEventListener('click', ladder);
+  document.getElementById('ladder-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { ladder(); }
+  });
+
+  var expertCheck = document.getElementById('expert-check');
+  function applyExpert() {
+    document.querySelectorAll('.expert').forEach(function (el) {
+      el.classList.toggle('on', expertOn);
+    });
+  }
+  expertCheck.addEventListener('change', function () {
+    expertOn = expertCheck.checked;
+    try { localStorage.setItem('echo-expert', expertOn ? "1" : "0"); } catch (err) {}
+    applyExpert();
+  });
+  try {
+    if (localStorage.getItem('echo-expert') === "1") {
+      expertOn = true;
+      expertCheck.checked = true;
+      applyExpert();
+    }
+  } catch (err) {}
+
+  renderAll();
+  setInterval(renderAll, 10000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!-- Echo connector — FreeSWITCH Sofia capture (HEPv3) -->
+<!-- Applied by connect.sh. Two pieces, both from the FreeSWITCH
+     documentation (Sofia profile settings):
+
+     1. capture-server  — a GLOBAL Sofia setting. Goes in
+        <global_settings> in sofia.conf.xml. Tells Sofia where
+        to mirror SIP signaling, in HEPv3, with this box's
+        capture id.
+     2. sip-capture     — a per-PROFILE setting. Goes in each
+        profile's <params> (internal.xml, external.xml, ...).
+        Turns the mirroring on for that profile.
+
+     The phone system copies its call signals (SIP — never audio)
+     to the Echo connector listening on loopback. -->
+
+<!-- global_settings (sofia.conf.xml) -->
+<param name="capture-server"
+       value="udp:__CAPTURE_ADDRESS__;hep=3;capture_id=__CAPTURE_ID__"/>
+
+<!-- each sip profile (sip_profiles/*.xml) -->
+<param name="sip-capture" value="true"/>

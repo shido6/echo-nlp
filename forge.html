@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forge &mdash; Build your own voice AI | EchoGuard.ca</title>
+<meta name="description" content="Renting a voice AI by the minute? Forge builds your agent in your cloud or on your Linux box &mdash; built with you, taught to you, owned by you. No per-minute rent, no lock-in, no $90k engineer.">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg-soft: #10161f;
+    --panel: #141c28;
+    --line: #243042;
+    --ink: #e8eef6;
+    --muted: #8b98ab;
+    --accent: #38bdf8;
+    --accent-deep: #0284c7;
+    --good: #34d399;
+    --warn: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* nav */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10, 14, 20, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  nav .links { margin-left: auto; display: flex; gap: 20px; }
+  nav .links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav .links a:hover { color: var(--ink); }
+
+  /* waveform */
+  .wave { display: flex; align-items: center; gap: 4px; height: 34px; }
+  .wave i {
+    width: 4px; border-radius: 2px; background: var(--accent);
+    animation: bar 1.1s ease-in-out infinite;
+  }
+  .wave i:nth-child(3n) { animation-delay: 0.15s; }
+  .wave i:nth-child(3n+1) { animation-delay: 0.3s; }
+  .wave i:nth-child(4n) { animation-delay: 0.45s; }
+  @keyframes bar { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+
+  /* hero */
+  header.hero { padding: 96px 0 72px; text-align: center; }
+  header.hero .wave { justify-content: center; margin-bottom: 28px; }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px;
+    font-weight: 700; color: var(--accent); margin: 0 0 18px;
+  }
+  h1 { font-size: clamp(36px, 5.6vw, 60px); line-height: 1.08; letter-spacing: -0.025em; margin: 0 0 22px; }
+  .sub { font-size: clamp(17px, 2.2vw, 21px); color: var(--muted); max-width: 660px; margin: 0 auto 36px; }
+  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 14px 30px; border-radius: 10px;
+    font-weight: 700; font-size: 16px; text-decoration: none; cursor: pointer; border: 0;
+  }
+  .btn-primary { background: var(--accent); color: #04121d; }
+  .btn-primary:hover { background: #7dd3fc; }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn-ghost:hover { background: rgba(56, 189, 248, 0.12); }
+  .fine { color: var(--muted); font-size: 13px; text-align: center; margin: 18px 0 0; }
+
+  .chips { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 34px; }
+  .chip {
+    border: 1px solid var(--line); background: var(--panel); border-radius: 999px;
+    padding: 8px 20px; font-size: 14px; color: var(--muted);
+  }
+  .chip strong { color: var(--accent); font-weight: 700; }
+
+  section { padding: 72px 0; }
+  section.soft { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  h2 { font-size: clamp(26px, 3.6vw, 36px); letter-spacing: -0.02em; margin: 0 0 14px; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 640px; margin: 0 0 40px; }
+  .center { text-align: center; }
+  .center .lede { margin-left: auto; margin-right: auto; }
+
+  /* grids */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* pricing */
+  .price { font-size: clamp(28px, 3.4vw, 38px); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 2px; }
+  .price span { font-size: 15px; font-weight: 400; color: var(--muted); }
+  .card .period { color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+  .card .feature { color: var(--muted); font-size: 15px; margin: 0; }
+
+  /* steps */
+  .step { display: flex; gap: 18px; margin-bottom: 26px; }
+  .step-num {
+    flex: 0 0 44px; height: 44px; border-radius: 50%;
+    background: rgba(56, 189, 248, 0.14); border: 1px solid var(--accent);
+    color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;
+  }
+  .step-body h3 { margin: 8px 0 4px; font-size: 18px; }
+  .step-body p { margin: 0; color: var(--muted); }
+
+  /* comparison tables */
+  table.compare { width: 100%; border-collapse: collapse; margin: 8px 0 28px; font-size: 15px; }
+  table.compare th, table.compare td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.compare th { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+  table.compare td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.compare tr:last-child td { border-bottom: 0; }
+  .rent { color: var(--warn); font-weight: 700; }
+  .own { color: var(--good); font-weight: 700; }
+  .src { color: var(--muted); font-size: 13px; margin: 0 0 28px; }
+
+  .beta-cta { text-align: center; }
+  .beta-cta .lede { margin: 0 auto 32px; }
+  .beta-cta .btn-ghost { margin-left: 12px; }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 640px) {
+    nav .links { gap: 14px; }
+    table.compare { font-size: 14px; }
+    table.compare th, table.compare td { padding: 10px 8px; }
+  }
+</style>
+
+<style id="mobile-nav-b">/* MOBILE-NAV-B */
+
+@media (max-width: 900px) {
+  nav .wrap { flex-wrap: wrap; height: auto; padding: 10px 0; gap: 10px; }
+  nav .links { order: 3; width: 100%; margin-left: 0; display: flex; flex-wrap: nowrap;
+    gap: 8px; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  nav .links::-webkit-scrollbar { display: none; }
+  nav .links a { flex: 0 0 auto; font-size: 13px; line-height: 1.1; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px;
+    white-space: nowrap; }
+  nav .links a.on { color: var(--accent); border-color: var(--accent); }
+  nav .links a:hover { color: var(--ink); border-color: var(--muted); }
+  table.compare, table.rows { display: block; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="forge.html">Forge<span>.</span></a>
+    <div class="links">
+      <a href="#trap">The trap</a>
+      <a href="#own">Own it</a>
+      <a href="#how">How it works</a>
+      <a href="#ladder">The ladder</a>
+      <a href="https://echo.echoguard.ca/">Echo</a>
+      <a href="https://greg.echoguard.ca/">Greg</a>
+      <a href="https://relay.echoguard.ca/">Relay</a>
+      <a href="https://voip.echoguard.ca/order.html">Pricing</a>
+      <a href="login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="wave" aria-hidden="true">
+      <i style="height:40%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:85%"></i><i style="height:45%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:80%"></i><i style="height:35%"></i><i style="height:75%"></i><i style="height:50%"></i><i style="height:90%"></i><i style="height:40%"></i>
+    </div>
+    <p class="eyebrow">From EchoGuard.ca</p>
+    <h1>Forge your own voice AI.</h1>
+    <p class="sub">A voice agent that lives in your cloud or on your Linux box &mdash; built with you, taught to you, owned by you. No per-minute rent. No lock-in. No $90k-a-year engineer required.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Forge%20%E2%80%94%20Build%20my%20own%20voice%20AI">Start forging</a>
+      <a class="btn btn-ghost" href="#trap">See the math</a>
+    </div>
+    <div class="chips">
+      <span class="chip"><strong>Echo</strong> sees it</span>
+      <span class="chip"><strong>Greg</strong> fixes it</span>
+      <span class="chip"><strong>Forge</strong> builds it</span>
+    </div>
+  </div>
+</header>
+
+<section id="trap" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>The rental trap</h2>
+      <p class="lede">Voice AI platforms rent you the agent by the minute. The meter runs forever &mdash; and it runs during silence.</p>
+    </div>
+    <p>A leading voice AI platform charges <span class="rent">$0.07&ndash;$0.31 per minute</span>. Their own calculator&rsquo;s default example comes to <span class="rent">$0.11/min</span>: four cents for the brain, five and a half cents for their platform, a cent and a half for the voice. Here&rsquo;s what that meter does:</p>
+    <table class="compare">
+      <tr><th>Minutes / month</th><th>The rental platform ($0.11/min)</th><th>The real carrier pipe</th></tr>
+      <tr><td>1,000</td><td class="num rent">$110 / mo &middot; $1,320 / yr</td><td class="num own">$2&ndash;$14 / mo</td></tr>
+      <tr><td>5,000</td><td class="num rent">$550 / mo &middot; $6,600 / yr</td><td class="num own">$10&ndash;$70 / mo</td></tr>
+      <tr><td>10,000</td><td class="num rent">$1,100 / mo &middot; $13,200 / yr</td><td class="num own">$20&ndash;$140 / mo</td></tr>
+      <tr><td>25,000</td><td class="num rent">$2,750 / mo &middot; $33,000 / yr</td><td class="num own">$50&ndash;$350 / mo</td></tr>
+    </table>
+    <p>The pipe column is published carrier rates, October 2026 &mdash; the actual phone line under every voice agent:</p>
+    <table class="compare">
+      <tr><th>Carrier</th><th>Inbound</th><th>Outbound</th></tr>
+      <tr><td>Twilio (US/CA)</td><td class="num">$0.0085/min</td><td class="num">$0.014/min</td></tr>
+      <tr><td>Telnyx</td><td class="num">~$0.005/min</td><td class="num">~$0.007/min</td></tr>
+      <tr><td>SignalWire &mdash; our own carrier</td><td class="num">$0.0066/min</td><td class="num">$0.008/min</td></tr>
+      <tr><td>Bandwidth (US)</td><td class="num">$0.0055/min</td><td class="num">$0.01/min</td></tr>
+      <tr><td>Flowroute (US/CA)</td><td class="num">$0.005/min</td><td class="num">$0.00833/min</td></tr>
+    </table>
+    <p>Telnyx headlines from $0.002/min; SignalWire&rsquo;s SIP rate lists at $0.003/min; Twilio&rsquo;s SIP volume pricing drops to $0.004/min. Either way, the rental platform charges <span class="rent">8&ndash;55&times; the pipe price</span> for the same minute &mdash; and their managed telephony (Twilio/Telnyx through them) is <span class="rent">$0.015/min</span>, for a line you can buy direct for less. The better your agent works, the more you pay. And that&rsquo;s before their fine print:</p>
+    <div class="grid">
+      <div class="card">
+        <h3>You pay for silence</h3>
+        <p>Their own FAQ: billing covers the entire call, &ldquo;even during silence,&rdquo; because the listening engine stays on. At $0.11/min, an hour of hold music is <span class="rent">$6.60</span>. On your own pipe: 12&ndash;84 cents &mdash; and you decide when the brain is on.</p>
+      </div>
+      <div class="card">
+        <h3>Add-ons meter too</h3>
+        <p>Knowledge base +$0.005/min. Safety guardrails +$0.005/min. PII removal +$0.01/min. AI quality assurance: <span class="rent">$0.10/min</span>.</p>
+      </div>
+      <div class="card">
+        <h3>Busy? That&rsquo;s extra</h3>
+        <p>20 calls at once are free. Each extra concurrent call: <span class="rent">$8 per call, per month</span>. Phone numbers: $2&ndash;$10/mo each. SMS: $20/mo.</p>
+      </div>
+    </div>
+    <p class="src">Numbers from the platforms&rsquo; public pricing pages &mdash; retellai.com/pricing, twilio.com, telnyx.com, signalwire.com, bandwidth.com, flowroute.com &mdash; October 2026. They even publish competitor comparisons &mdash; we&rsquo;ll do them one better: here&rsquo;s how to stop renting from any of them.</p>
+  </div>
+</section>
+
+<section id="own">
+  <div class="wrap">
+    <div class="center">
+      <h2>Own it instead</h2>
+      <p class="lede">The same agent, on your own box. The parts they rent per minute become a fixed bill you already pay.</p>
+    </div>
+    <table class="compare">
+      <tr><th>The part</th><th>They charge</th><th>You run it</th></tr>
+      <tr>
+        <td><strong>Voice platform</strong> (their &ldquo;voice infra&rdquo; + listening)</td>
+        <td class="num rent">$0.055/min</td>
+        <td class="own">Your Linux box or a small cloud VM &mdash; about $20&ndash;60/mo, fixed</td>
+      </tr>
+      <tr>
+        <td><strong>The voice</strong> (text-to-speech)</td>
+        <td class="num rent">$0.015&ndash;$0.10/min</td>
+        <td class="own">Local open-source voices: $0. Or your own cloud voice at list price</td>
+      </tr>
+      <tr>
+        <td><strong>The brain</strong> (the model)</td>
+        <td class="num">passed through</td>
+        <td class="own">Your own key at list price &mdash; or a free-tier model, pennies</td>
+      </tr>
+      <tr>
+        <td><strong>Knowledge base, guardrails, PII removal</strong></td>
+        <td class="num rent">+$0.005&ndash;$0.01/min each</td>
+        <td class="own">Prompts and config. Free.</td>
+      </tr>
+      <tr>
+        <td><strong>Busy phones</strong> (concurrency)</td>
+        <td class="num rent">$8/call/mo after 20</td>
+        <td class="own">One modest box handles hundreds of calls. No meter.</td>
+      </tr>
+      <tr>
+        <td><strong>Silence and hold time</strong></td>
+        <td class="num rent">billed</td>
+        <td class="own">Your agent only talks when it talks. Your carrier bills the line &mdash; about $0.002&ndash;$0.014/min, carrier to carrier.</td>
+      </tr>
+    </table>
+    <p><strong>Break-even is around 500&ndash;1,000 minutes a month</strong> on the platform parts alone. Past that, ownership wins &mdash; and the gap grows every month. At 10,000 minutes, their platform parts cost $700+/mo; your whole box costs less than your office coffee.</p>
+    <p>Small volume? A platform&rsquo;s zero-ops may honestly be the better call. We&rsquo;ll show you both sheets of math before you spend a dollar.</p>
+  </div>
+</section>
+
+<section id="how" class="soft">
+  <div class="wrap">
+    <h2>How Forge works</h2>
+    <p class="lede">Four steps. You end up owning the whole thing.</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>We scope your agent</h3>
+        <p>Receptionist, follow-ups, dispatch, lead qualification &mdash; your calls, your rules. We write down what &ldquo;done&rdquo; looks like before anyone touches a server.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>We build it in your environment</h3>
+        <p>Our engineers build inside your cloud or on your Linux system. Your Asterisk or FreeSWITCH, your SIP trunk, your phone numbers. Nothing lives on our side. Nothing we can switch off.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>You learn it, hands-on</h3>
+        <p>Pair-build: every config, every prompt, every dialplan line, explained as it&rsquo;s written. Walk away knowing the whole thing end to end &mdash; your team can change the agent themselves.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>You own it, forever</h3>
+        <p>No per-minute platform fee. No lock-in. If we disappeared tomorrow, your agent keeps running &mdash; it&rsquo;s yours, on your infrastructure.</p>
+      </div>
+    </div>
+    <p>Every Forge agent ships wired to <a href="https://echo.echoguard.ca/">Echo</a>: paste one line, and your agent&rsquo;s calls join the same plain-language answers. Ask your phone system what your agent did today &mdash; and get receipts.</p>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="center">
+      <h2>Why not just hire an engineer?</h2>
+      <p class="lede">Because you&rsquo;d pay for the whole person to build what we&rsquo;ll build with you &mdash; and then still own the know-how.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>A tenth of the price</h3>
+        <p>A telecom engineer runs $90k&ndash;$120k a year &mdash; about $7,500/mo before benefits, tools, and on-call. The Forge pair-build is $5,500 one-time: under one month of an engineer.</p>
+      </div>
+      <div class="card">
+        <h3>The skill stays</h3>
+        <p>With a platform, you know how to click. With Forge, your team knows how it works. No vendor ticket, no waiting, no re-learning when the market moves.</p>
+      </div>
+      <div class="card">
+        <h3>It&rsquo;s easy with AI</h3>
+        <p>This is the DIY era. The hard parts &mdash; wiring speech to your phone system, picking a model, keeping calls clear &mdash; are a weekend&rsquo;s build with the right recipe. We bring the recipe.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="honest" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>The honest trade</h2>
+      <p class="lede">Ownership means you run it. Here&rsquo;s exactly what that means.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>You run it</h3>
+        <p>We teach you &mdash; updates, carrier bills, and model keys are yours. If you&rsquo;d rather never touch a server, a platform is fine. We&rsquo;re for the teams that would rather own it.</p>
+      </div>
+      <div class="card">
+        <h3>Compliance is yours</h3>
+        <p>Recording consent, HIPAA, retention &mdash; yours to configure. We show you where the switches are, in your environment, under your rules.</p>
+      </div>
+      <div class="card">
+        <h3>What you get</h3>
+        <p>No meter. No lock-in. The skill stays in-house. And a fraction of the run cost at volume &mdash; the gap widens every month you grow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ladder" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>The ladder</h2>
+      <p class="lede">From a free recipe to a fully built agent in your cloud. Every rung is my time &mdash; and every rung works on your system, or you don&rsquo;t pay.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="price">FREE</div>
+        <p class="period">pay what you can</p>
+        <h3>The recipe</h3>
+        <p class="feature">The digital how-to. Build a voice agent on your box, step by step. Your box, your data, your stack &mdash; the same file either way.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/individuals.html#playbooks">Get it free &rarr;</a></p>
+      </div>
+      <div class="card">
+        <div class="price">$499<span> CAD</span></div>
+        <p class="period">one-time</p>
+        <h3>The build session</h3>
+        <p class="feature">Live, on your system. We build or fix it together while you watch and learn. Resolution, or no charge.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">Book it &rarr;</a></p>
+      </div>
+      <div class="card">
+        <div class="price">$5,500</div>
+        <p class="period">one-time</p>
+        <h3>The pair-build</h3>
+        <p class="feature">We build your agent in your cloud or on your Linux box, with you. Production-ready, taught to you, wired to Echo.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">Book it &rarr;</a></p>
+      </div>
+      <div class="card">
+        <div class="price">$750<span>/mo</span></div>
+        <p class="period">optional care</p>
+        <h3>The keeper</h3>
+        <p class="feature">We watch, tune, and jump in. The Greg option, for your agent.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See caretaking &rarr;</a></p>
+      </div>
+      <div class="card">
+        <div class="price">$999<span>/mo</span></div>
+        <p class="period">the front line</p>
+        <h3>The full shift</h3>
+        <p class="feature">Around-the-clock care for shops where the agent is the front line. Escalations stay human.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See caretaking &rarr;</a></p>
+      </div>
+    </div>
+    <p class="fine">Want it done <em>for</em> you, not <em>with</em> you? The deep pair-build is $5,500 CAD &mdash; production-ready, taught to you, wired to Echo. Book it at <a href="https://voip.echoguard.ca/order.html#build">voip.echoguard.ca</a>.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="center">
+      <h2>Straight answers</h2>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Do I need a $90k engineer?</h3>
+        <p>No &mdash; that&rsquo;s the point. We build with you and teach as we go. Your team ends up able to run and change the agent themselves.</p>
+      </div>
+      <div class="card">
+        <h3>Where does it run?</h3>
+        <p>Your cloud or your Linux box. It never leaves your environment, and we never take it home with us.</p>
+      </div>
+      <div class="card">
+        <h3>What if EchoGuard disappears?</h3>
+        <p>Your agent keeps running. It&rsquo;s yours, on your infrastructure, with the know-how in your team&rsquo;s heads.</p>
+      </div>
+      <div class="card">
+        <h3>Is it cheaper than the platforms?</h3>
+        <p>Run-rate: yes, at volume. Zero-ops: no &mdash; that&rsquo;s the trade. We show you both sheets of math before you spend a dollar.</p>
+      </div>
+      <div class="card">
+        <h3>I&rsquo;m on RingCentral, Zoom Phone, or Teams.</h3>
+        <p>Fine. We build against your stack &mdash; SIP, APIs, wherever your calls live. And your agent&rsquo;s calls still flow to Echo for the plain-language answers.</p>
+      </div>
+      <div class="card">
+        <h3>What will it sound like?</h3>
+        <p>You pick the voice. Local open-source voices cost nothing per minute; your own cloud voice at list price if you want a specific sound.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="start" class="soft beta-cta">
+  <div class="wrap">
+    <h2>Works on your system, or you don&rsquo;t pay</h2>
+    <p class="lede">If your agent doesn&rsquo;t work on your system, you walk away owing nothing &mdash; and you keep the know-how.</p>
+    <div class="cta-row" style="justify-content:center">
+      <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Forge%20%E2%80%94%20Build%20my%20own%20voice%20AI">Start forging</a>
+      <a class="btn btn-ghost" href="https://voip.echoguard.ca/individuals.html#playbooks">Get the recipe &mdash; free</a>
+      <a class="btn btn-ghost" href="https://voip.echoguard.ca/order.html#services">Monthly care &mdash; $750/mo</a>
+      <a class="btn btn-ghost" href="https://echo.echoguard.ca/">Meet Echo</a>
+      <a class="btn btn-ghost" href="https://greg.echoguard.ca/">Meet Greg</a>
+    </div>
+    <p style="margin-top:22px;font-size:15px;line-height:1.7">The recipe is free &mdash; the same playbook behind Greg, pay what you can afford. The file is yours either way.</p>
+    <div class="cta-row" style="justify-content:center;margin-top:14px">
+      <a class="btn btn-primary" href="https://voip.echoguard.ca/individuals.html#playbooks">Get the recipe &mdash; free</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Forge by <a href="https://echoguard.ca">EchoGuard Communications</a> &mdash; build your own voice AI.</span>
+    <span>Text <a href="tel:+13438434440" style="color:inherit;text-decoration:none;">343-843-4440</a></span> <span style="opacity:.55">&middot;</span> <span><a href="mailto:kaiel@echoguard.ca" style="color:inherit;text-decoration:none;">kaiel@echoguard.ca</a></span> <span style="opacity:.55">&middot;</span> <span>forge.echoguard.ca</span> <span style="opacity:.55">&middot;</span> <a href="/login.html" style="color:inherit;text-decoration:none;">Beta sign in</a>
+  </div>
+</footer>
+
+</body>
+</html>

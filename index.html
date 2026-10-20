@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Echo — Ask your phone system</title>
+<meta name="description" content="Echo reads your phone system's data and answers in plain language — no query syntax. Integrated into AiPBX, the open-source IP PBX.">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg-soft: #10161f;
+    --panel: #141c28;
+    --line: #243042;
+    --ink: #e8eef6;
+    --muted: #8b98ab;
+    --accent: #38bdf8;
+    --accent-deep: #0284c7;
+    --good: #34d399;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10, 14, 20, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  nav .links { margin-left: auto; display: flex; gap: 20px; }
+  nav .links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav .links a:hover { color: var(--ink); }
+  header.hero { padding: 96px 0 72px; text-align: center; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px; font-weight: 700; color: var(--accent); margin: 0 0 18px; }
+
+  /* waveform */
+  .wave { display: flex; align-items: center; gap: 4px; height: 34px; justify-content: center; margin-bottom: 28px; }
+  .wave i { width: 4px; border-radius: 2px; background: var(--accent); animation: bar 1.1s ease-in-out infinite; }
+  .wave i:nth-child(3n) { animation-delay: 0.15s; }
+  .wave i:nth-child(3n+1) { animation-delay: 0.3s; }
+  .wave i:nth-child(4n) { animation-delay: 0.45s; }
+  @keyframes bar { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+  h1 { font-size: clamp(36px, 5.6vw, 60px); line-height: 1.08; letter-spacing: -0.025em; margin: 0 0 22px; }
+  .sub { font-size: clamp(17px, 2.2vw, 21px); color: var(--muted); max-width: 660px; margin: 0 auto 36px; }
+  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .integrated { margin: 26px auto 0; font-size: 13.5px; color: var(--muted); }
+  .integrated b { color: var(--ink); }
+  .integrated a { color: var(--accent); text-decoration: none; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; border: 1px solid var(--line); color: var(--ink); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.0)); }
+  .btn-primary { background: linear-gradient(180deg, rgba(56,189,248,0.9), rgba(2,132,199,0.9)); border-color: rgba(56,189,248,0.6); }
+  .features { padding: 48px 0; border-top: 1px solid var(--line); background: var(--bg-soft); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px; }
+  .card h3 { margin: 0 0 6px; }
+  .card p { margin: 0; color: var(--muted); }
+  footer { border-top: 1px solid var(--line); padding: 28px 0; color: var(--muted); font-size: 13px; }
+</style>
+
+<style id="mobile-nav-b">/* MOBILE-NAV-B */
+
+@media (max-width: 900px) {
+  nav .wrap { flex-wrap: wrap; height: auto; padding: 10px 0; gap: 10px; }
+  nav .links { order: 3; width: 100%; margin-left: 0; display: flex; flex-wrap: nowrap;
+    gap: 8px; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  nav .links::-webkit-scrollbar { display: none; }
+  nav .links a { flex: 0 0 auto; font-size: 13px; line-height: 1.1; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px;
+    white-space: nowrap; }
+  nav .links a.on { color: var(--accent); border-color: var(--accent); }
+  nav .links a:hover { color: var(--ink); border-color: var(--muted); }
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html">Echo<span>.</span></a>
+    <div class="links">
+      <a href="app.html">App</a>
+      <a href="login.html">Login</a>
+      <a href="https://greg.echoguard.ca/">Greg</a>
+      <a href="https://voip.echoguard.ca/">VoIP</a>
+      <a href="https://echoguard.ca/">echoguard.ca</a>
+    </div>
+  </div>
+</nav>
+<header class="hero">
+  <div class="wrap">
+    <div class="wave" aria-hidden="true">
+      <i style="height:40%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:85%"></i><i style="height:45%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:80%"></i><i style="height:35%"></i><i style="height:75%"></i><i style="height:50%"></i><i style="height:90%"></i><i style="height:40%"></i>
+    </div>
+    <p class="eyebrow">From EchoGuard.ca</p>
+    <h1>Ask your phone system.</h1>
+    <p class="sub">Echo reads your phone system's actual data and answers in plain language. No query syntax. No jargon.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="app.html">Open Echo</a>
+      <a class="btn" href="login.html">Sign in</a>
+    </div>
+    <p class="integrated">Integrated into <a href="https://github.com/shido6/AiPBX" target="_blank" rel="noopener"><b>AiPBX</b></a> — Echo is the SIP troubleshooting module inside the open-source PBX portal.</p>
+  </div>
+</header>
+<section class="features">
+  <div class="wrap">
+    <h2 style="text-align:center; margin:0 0 8px; font-size:clamp(24px,4vw,40px); letter-spacing:-0.03em;">What Echo does</h2>
+    <p style="text-align:center; color: var(--muted); margin:0 auto; max-width:620px;">Answers in plain language from your phone system’s actual data — no guessing, no query syntax.</p>
+    <div class="grid">
+      <div class="card"><h3>Problems, fast</h3><p>Find one-way audio, registration failures, call drops, trunks down, or loops in seconds.</p></div>
+      <div class="card"><h3>What’s happening</h3><p>See active calls, who’s talking, check-ins, latest events, and a one-line summary.</p></div>
+      <div class="card"><h3>From your records</h3><p>Answers come from your system’s real telemetry (HEP/registrations/trunks) — labelled facts vs. Greg’s read.</p></div>
+      <div class="card"><h3>No query language</h3><p>Ask in plain words: “any problems?”, “who’s talking?”, “calls today?” — it just works.</p></div>
+      <div class="card"><h3>Works with your PBX</h3><p><b>Integrated into AiPBX</b>, where Echo is the <b>AI → Echo</b> module and reads the portal’s own capture, registrations and trunks. Also Asterisk, FreePBX, FreeSWITCH, Kamailio — no changes required.</p></div>
+      <div class="card"><h3>Private by default</h3><p>Runs where you put it — your server, VPS, or hardware. Your data stays yours.</p></div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="wrap">Echo by EchoGuard Communications &middot; <a href="https://echoguard.ca" style="color:inherit">echoguard.ca</a></div>
+</footer>
+</body>
+</html>

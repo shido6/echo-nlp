@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Greg &mdash; The engineer on your box | EchoGuard.ca</title>
+<meta name="description" content="A telecom engineer costs $90k&ndash;$120k a year. Greg is $999/mo &mdash; a tenth of the price, answers in seconds, reads your actual phone-system data, and comes with 20+ years of telecom muscle memory baked in.">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg-soft: #10161f;
+    --panel: #141c28;
+    --line: #243042;
+    --ink: #e8eef6;
+    --muted: #8b98ab;
+    --accent: #38bdf8;
+    --accent-deep: #0284c7;
+    --good: #34d399;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* nav */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10, 14, 20, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  nav .links { margin-left: auto; display: flex; gap: 20px; }
+  nav .links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav .links a:hover { color: var(--ink); }
+
+  /* waveform */
+  .wave { display: flex; align-items: center; gap: 4px; height: 34px; }
+  .wave i {
+    width: 4px; border-radius: 2px; background: var(--accent);
+    animation: bar 1.1s ease-in-out infinite;
+  }
+  .wave i:nth-child(3n) { animation-delay: 0.15s; }
+  .wave i:nth-child(3n+1) { animation-delay: 0.3s; }
+  .wave i:nth-child(4n) { animation-delay: 0.45s; }
+  @keyframes bar { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+
+  /* hero */
+  header.hero { padding: 96px 0 72px; text-align: center; }
+  header.hero .wave { justify-content: center; margin-bottom: 28px; }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px;
+    font-weight: 700; color: var(--accent); margin: 0 0 18px;
+  }
+  h1 { font-size: clamp(36px, 5.6vw, 60px); line-height: 1.08; letter-spacing: -0.025em; margin: 0 0 22px; }
+  .sub { font-size: clamp(17px, 2.2vw, 21px); color: var(--muted); max-width: 660px; margin: 0 auto 36px; }
+  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 14px 30px; border-radius: 10px;
+    font-weight: 700; font-size: 16px; text-decoration: none; cursor: pointer; border: 0;
+  }
+  .btn-primary { background: var(--accent); color: #04121d; }
+  .btn-primary:hover { background: #7dd3fc; }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn-ghost:hover { background: rgba(56, 189, 248, 0.12); }
+
+  section { padding: 72px 0; }
+  section.soft { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  h2 { font-size: clamp(26px, 3.6vw, 36px); letter-spacing: -0.02em; margin: 0 0 14px; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 640px; margin: 0 0 40px; }
+  .center { text-align: center; }
+  .center .lede { margin-left: auto; margin-right: auto; }
+
+  /* grids */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* pricing */
+  .price { font-size: clamp(28px, 3.4vw, 38px); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 2px; }
+  .price span { font-size: 15px; font-weight: 400; color: var(--muted); }
+  .card .period { color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+  .card .feature { color: var(--muted); font-size: 15px; margin: 0; }
+
+  /* steps */
+  .step { display: flex; gap: 18px; margin-bottom: 26px; }
+  .step-num {
+    flex: 0 0 44px; height: 44px; border-radius: 50%;
+    background: rgba(56, 189, 248, 0.14); border: 1px solid var(--accent);
+    color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;
+  }
+  .step-body h3 { margin: 8px 0 4px; font-size: 18px; }
+  .step-body p { margin: 0; color: var(--muted); }
+
+  .fine { color: var(--muted); font-size: 13px; text-align: center; margin: 18px 0 0; }
+
+  .chips { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .chip {
+    border: 1px solid var(--line); background: var(--panel); border-radius: 999px;
+    padding: 10px 22px; font-size: 15px; color: var(--muted);
+  }
+
+  .beta-cta { text-align: center; }
+  .beta-cta .lede { margin: 0 auto 32px; }
+  .beta-cta .btn-ghost { margin-left: 12px; }
+
+  /* Reach Greg — the site's SIP reach-me line */
+  .reach-btn { display: inline-block; background: var(--accent); color: #04121d; border: none; border-radius: 10px; padding: 14px 28px; font-size: 16px; font-weight: 800; cursor: pointer; letter-spacing: -0.01em; }
+  .reach-btn:disabled { opacity: .55; cursor: default; }
+  .reach-panel { max-width: 480px; margin: 16px auto 0; text-align: left; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; background: var(--bg); }
+  .reach-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-weight: 700; }
+  .reach-timer { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 15px; }
+  .reach-log { color: var(--muted); font-size: 14px; margin-top: 8px; min-height: 1.3em; line-height: 1.5; }
+  .reach-actions { margin-top: 12px; text-align: right; }
+  .reach-hangup { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 9px 18px; cursor: pointer; color: var(--ink); font-size: 14px; }
+  .reach-hangup:hover { border-color: var(--accent); color: var(--accent); }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 640px) {
+    nav .links { gap: 14px; }
+  }
+</style>
+
+<style id="mobile-nav-b">/* MOBILE-NAV-B */
+
+@media (max-width: 900px) {
+  nav .wrap { flex-wrap: wrap; height: auto; padding: 10px 0; gap: 10px; }
+  nav .links { order: 3; width: 100%; margin-left: 0; display: flex; flex-wrap: nowrap;
+    gap: 8px; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  nav .links::-webkit-scrollbar { display: none; }
+  nav .links a { flex: 0 0 auto; font-size: 13px; line-height: 1.1; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px;
+    white-space: nowrap; }
+  nav .links a.on { color: var(--accent); border-color: var(--accent); }
+  nav .links a:hover { color: var(--ink); border-color: var(--muted); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html">Greg<span>.</span></a>
+    <div class="links">
+      <a href="index.html#interface">In action</a>
+      <a href="index.html#examples">Examples</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#platforms">Platforms</a>
+      <a href="greg.html">Meet Greg</a>
+      <a href="https://echo.echoguard.ca/">Echo</a>
+      <a href="https://forge.echoguard.ca/">Forge</a>
+      <a href="https://relay.echoguard.ca/">Relay</a>
+      <a href="https://voip.echoguard.ca/order.html">Pricing</a>
+      <a href="login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="wave" aria-hidden="true">
+      <i style="height:40%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:85%"></i><i style="height:45%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:80%"></i><i style="height:35%"></i><i style="height:75%"></i><i style="height:50%"></i><i style="height:90%"></i><i style="height:40%"></i>
+    </div>
+    <img src="headshot.jpeg" alt="Greg Merriweather-El &mdash; the engineer you don&rsquo;t have to hire" width="120" height="120" style="border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 44px rgba(56,189,248,.35);margin-bottom:20px;object-fit:cover">
+    <p class="eyebrow">From EchoGuard.ca</p>
+    <h1>Meet Greg &mdash; the engineer you don&rsquo;t have to hire.</h1>
+    <p class="sub">A telecom engineer costs $90k&ndash;$120k a year. Greg is $999/mo &mdash; a tenth of the price, deployed on your box, answers in seconds, reads your actual phone-system data instead of guessing, and comes with 20+ years of telecom muscle memory baked in.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Hire%20Greg">Hire Greg</a>
+      <a class="btn btn-ghost" href="index.html#interface">See how he answers</a>
+    </div>
+    <div class="chips" style="margin-top:34px">
+      <span class="chip">On your box</span>
+      <span class="chip">Your server, your VPS, your hardware</span>
+      <span class="chip">Slack, Mattermost, or on the call</span>
+      <span class="chip">24/7 &middot; answers in ~3 seconds</span>
+    </div>
+  </div>
+</header>
+
+<section id="why-both" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>Why Echo AND Greg?</h2>
+      <p class="lede">One watches. One responds. You can start with either &mdash; and they&rsquo;re stronger together.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Echo sees it &mdash; in the cloud</h3>
+        <p>The app you sign into from anywhere. Echo watches your phone system and tells you what&rsquo;s broken, in plain language, with receipts. Free during beta &mdash; nothing to install.</p>
+        <p style="margin-top:14px"><a href="https://echo.echoguard.ca/">Meet Echo &rarr;</a></p>
+      </div>
+      <div class="card">
+        <h3>Greg fixes it &mdash; on your box</h3>
+        <p>The engineer deployed to your server, VPS, or hardware. Greg sits in your team channel and on the call, 24/7, and jumps in with answers in about 3 seconds. From $750/mo. Escalations stay human.</p>
+        <p style="margin-top:14px"><a href="mailto:sales@echoguard.ca?subject=Hire%20Greg">Hire Greg &rarr;</a></p>
+      </div>
+      <div class="card">
+        <h3>Forge builds it &mdash; your own voice AI</h3>
+        <p>Build your own voice AI in your cloud or on your Linux box, with our help. You own it &mdash; no per-minute rent, no lock-in. The recipe is free.</p>
+        <p style="margin-top:14px"><a href="https://forge.echoguard.ca/">Forge your own &rarr;</a></p>
+      </div>
+    </div>
+    <p class="fine">Greg reads your phone system&rsquo;s data on your box and borrows Echo&rsquo;s answers from the cloud &mdash; and when the cloud can&rsquo;t be reached, his built-in know-how keeps answering.</p>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="center">
+      <h2>Why Greg</h2>
+      <p class="lede">Gregory &mdash; from the Greek for <em>watchful</em>. Same work as an engineer. A tenth of the price. No salary, no benefits, no 2&nbsp;AM wake-up.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Faster</h3>
+        <p>Answers in about 3 seconds, 24/7. The question you&rsquo;d email your engineer at midnight is answered before you finish typing it. No ticket queue, no lunch break, no on-call rotation.</p>
+      </div>
+      <div class="card">
+        <h3>More accurate</h3>
+        <p>Greg doesn&rsquo;t answer from memory &mdash; he reads your phone system&rsquo;s actual data. Every answer is put together the same careful way, so he can&rsquo;t make things up about your phone system. What the data says, not what he guesses.</p>
+      </div>
+      <div class="card">
+        <h3>20+ years baked in</h3>
+        <p>The questions he knows how to answer, the checklists for known problems, the &ldquo;what do I check first&rdquo; rules of thumb &mdash; 20+ years of telecom muscle memory, built in. The engineer you wish you could hire, at a tenth of the price.</p>
+      </div>
+      <div class="card">
+        <h3>Works through an outage</h3>
+        <p>Greg runs on your network, with answers from Echo in the cloud. When Echo can&rsquo;t be reached &mdash; internet down, an office cut off from the net, a lockdown &mdash; his built-in know-how keeps answering the questions that matter most. No single point of failure.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="does" class="soft">
+  <div class="wrap">
+    <h2>What he does</h2>
+    <p class="lede">Four steps. No computer languages to learn.</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Ask in plain words</h3>
+        <p>Trunks, registrations, drop, jitter, voicemail, queues &mdash; the way your team already talks about phone systems. Type it, or tap the mic and say it.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Greg reads every signal</h3>
+        <p>Calls, registrations, trunk health, jitter, packet loss, call-quality scores &mdash; every moment, across every site and every carrier. He doesn&rsquo;t wait for you to describe the problem; he already knows what your phone system is doing.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>You get the answer &mdash; with receipts</h3>
+        <p>A plain-language answer plus the numbers behind it: counts, timestamps, affected sites, quality scores. Drill down to the raw evidence whenever you want it.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>He shows up wherever the fire is</h3>
+        <p>Slack, Mattermost, or the phone call itself &mdash; even the 2 AM firefighting call. Greg listens in and jumps in with answers when he can help. Anything he shouldn&rsquo;t touch, he escalates &mdash; and he knows what that is.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="evidence">
+  <div class="wrap">
+    <div class="center">
+      <h2>The evidence</h2>
+      <p class="lede">20+ years of production VoIP &mdash; Asterisk, FreeSWITCH, Kamailio/OpenSIPS, carrier interconnects, UCaaS/CCaaS, and contact-center platforms. Every number below is on the record: logs, traces, packet captures, measurable health &mdash; before conclusions.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>2026 &mdash; live platform (private, in production)</h3>
+        <p class="feature">Took the platform health endpoint from <strong>56% degraded to 100% healthy</strong> across Asterisk, AMI, database, carrier interconnect, and TTS &mdash; marking intentionally disabled services accurately instead of reporting them as failures. Shipped end-to-end carrier DID lifecycle automation (search &rarr; order &rarr; route &rarr; release, with a 10-minute inventory hold) and ran a real end-to-end carrier acceptance test: purchased, routed, billed, released, cleaned up &mdash; zero residual artifacts. Kernel-level geo-IP SIP blocking with <strong>79,248 US/CA CIDR ranges</strong>, persisted across reboot, live probe-drop counters. OpenTelemetry + Loki pipeline to Grafana, with call telemetry in production dashboards. Automated tests: 20/20 DID lifecycle, 11/11 auth, 2/2 tenant middleware, 4/4 health.</p>
+      </div>
+      <div class="card">
+        <h3>Yahoo &mdash; Telecom Engineer, 2010&ndash;2013</h3>
+        <p class="feature">Built and ran an open-source voice platform at global scale. First assignment: the new Amman, Jordan sales office &mdash; no phone system existed; flew in, racked Cisco 2811 gateways with E1 circuits, built two Asterisk servers, provisioned desk phones and conference-room phones, and the site joined 40+ Asterisk sites across APAC, EMEA, and the Americas. Steered the full HQ changeover from a legacy Nortel (Option 11/81) system to Cisco gateways and Asterisk &mdash; T1 migration, the legacy messaging platform moved to Asterisk voicemail, phased building-by-building weekend rollout. On-call across <strong>70+ locations / 140 Asterisk servers</strong>: production outage response, hardware failures, site restorations, and failover between sites. Made BLF (Busy Lamp Field) work on Asterisk 1.4.x where Digium and the forums said it was impossible. Owned company-wide call-detail (CDR), toll-fraud detection, and trunk-utilization tooling &mdash; SQL reports automated and emailed to the team.</p>
+      </div>
+      <div class="card">
+        <h3>Lightyear &mdash; 2007&ndash;2009</h3>
+        <p class="feature">Replaced the per-user-charged Iperia voicemail platform with a custom Asterisk-based voicemail system integrated into the existing VoIP infrastructure (Apache, MySQL, PHP) &mdash; a <strong>$20,000 cost savings</strong>. Recovered <strong>$200K from the resale</strong> of a decommissioned Lucent switch. Tweaked the multi-tenant hosted PBX GUI; introduced OpenVZ virtualization; improved transcoding behavior, voicemail features, and production service reliability.</p>
+      </div>
+      <div class="card">
+        <h3>NuFone &mdash; co-founder, 2001&ndash;2007</h3>
+        <p class="feature">Co-founded one of the first Asterisk-friendly VoIP providers in the world &mdash; users could buy a number, point it at their VoIP device, and make outbound calls from the same device in under 2 minutes. Coverage across <strong>1,700+ cities/countries</strong> with multi-carrier routing, billing, and provisioning; <strong>60,000+ customers</strong>; <strong>300+ concurrent calls at peak</strong>; billing to 1,700+ global destinations. Migrated enterprises from CallManager, 3Com NBX, and Avaya to Asterisk &mdash; saving several hundred thousand dollars per year in service contracts and telco charges.</p>
+      </div>
+      <div class="card">
+        <h3>The operating style</h3>
+        <p class="feature">Reproduce &rarr; Isolate &rarr; Prove &rarr; Restore &rarr; Improve &rarr; Document. Evidence first: logs, traces, packet captures, telemetry, ticket history, customer symptoms, vendor documentation, and direct system behavior &mdash; before conclusions. Controlled lab environments to isolate variables when observability is weak or production data is incomplete.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="honest">
+  <div class="wrap">
+    <div class="center">
+      <h2>The honest part</h2>
+      <p class="lede">Humans own changes, 911, and emergencies. Greg helps your on-call engineer &mdash; with the questions, the monitoring, the evidence hunt. &ldquo;Replaces a full-time engineer&rdquo; is your math, not our headline.</p>
+      <p class="lede"><strong>One engineer-month runs about $7.5k.</strong> Greg pays for himself if he saves your team a few days a month.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>The ladder</h2>
+      <p class="lede">From a free recipe to a fully built agent. Every rung is my time &mdash; and every rung works on your system, or you don&rsquo;t pay.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="price">FREE</div>
+        <p class="period">pay what you can</p>
+        <h3>The recipe</h3>
+        <p class="feature">The digital how-to: tap your phone system&rsquo;s signals (HEP), store them (Loki), and answer questions in plain words. Your box, your data, your stack &mdash; the same file either way.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/individuals.html#playbooks">Get it free &rarr;</a></p>
+      </div>
+      <div class="card">
+        <div class="price">$499<span> CAD</span></div>
+        <p class="period">one-time</p>
+        <h3>The build session</h3>
+        <p class="feature">Live, on your system. We build or fix it together while you watch and learn. Resolution, or no charge.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">Book it &rarr;</a></p>
+      </div>
+      <div class="card">
+        <div class="price">$5,500</div>
+        <p class="period">one-time</p>
+        <h3>Greg deployed</h3>
+        <p class="feature">The deep pair-build: we deploy Greg on your box with you. Production-ready, taught to you, wired to Echo.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">Book it &rarr;</a></p>
+      </div>
+      <div class="card">
+        <div class="price">$750<span>/mo</span></div>
+        <p class="period">augment your team</p>
+        <h3>First-responder</h3>
+        <p class="feature">Greg joins your Slack, Mattermost, or the conference call. A tenth of an engineer, 24/7.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See caretaking &rarr;</a></p>
+      </div>
+      <div class="card">
+        <div class="price">$999<span>/mo</span></div>
+        <p class="period">replace the on-call</p>
+        <h3>The night-shift engineer</h3>
+        <p class="feature">For shops where Greg <em>is</em> the on-call engineer. Escalations stay human.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See caretaking &rarr;</a></p>
+      </div>
+    </div>
+    <p class="fine">Services catch what he can&rsquo;t: the build session ($499 CAD) for the quick fires &middot; the deep pair-build ($5,500 CAD) for the big builds &middot; caretaking so it stays fixed.</p>
+  </div>
+</section>
+
+<section id="hire" class="soft beta-cta">
+  <div class="wrap">
+    <h2>Works on your system, or you don&rsquo;t pay</h2>
+    <p class="lede">If Greg doesn&rsquo;t answer your phone system&rsquo;s questions with receipts, you walk away owing nothing.</p>
+    <div class="cta-row" style="justify-content:center">
+      <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Hire%20Greg">Hire Greg</a>
+      <a class="btn btn-ghost" href="index.html#interface">See it in action</a>
+      <a class="btn btn-ghost" href="https://forge.echoguard.ca/">Build your own voice AI</a>
+      <a class="btn btn-ghost" href="https://relay.echoguard.ca/">The relay</a>
+    </div>
+    <p style="margin-top:22px;font-size:15px;line-height:1.7">Phones broken right now? The one service: I come in on your live system and we fix it in one sitting &mdash; even if you&rsquo;ve never touched a dialplan. You watch every step and leave knowing how it works. <strong style="color:var(--accent)">Resolution, or no charge.</strong></p>
+    <div id="reach-greg" style="margin:20px 0 2px"></div>
+    <p class="fine" style="margin-bottom:16px">Prefer to talk to a human right now? <strong>Reach Greg from this page</strong> &mdash; his desk phone and his cell ring over SIP at the same time. No queue, no call center, no charge. While you wait you&rsquo;ll hear one of his songs; leave a message and it lands in his inbox, transcribed.</p>
+    <div class="cta-row" style="justify-content:center;margin-top:14px">
+      <a class="btn btn-primary" href="https://voip.echoguard.ca/order.html#build">Book a build session &mdash; $499 CAD</a>
+      <a class="btn btn-ghost" href="https://voip.echoguard.ca">The knowledge library &rarr;</a>
+    </div>
+    <div style="margin:28px auto 0; max-width:760px; text-align:center">
+      <h3 style="margin:0 0 8px; font-size:20px; letter-spacing:-0.01em">Ask Greg (AI)</h3>
+      <p class="fine" style="margin:0 0 16px">Ask Greg anything about VoIP, Asterisk, SIP, FreeSWITCH, troubleshooting, or how to fix your system. Runs on his knowledge base.</p>
+      <div id="greg-ai-gate" style="border:1px solid var(--line); border-radius:14px; background:#0b1220; padding:20px; text-align:center">
+        <p style="margin:0 0 10px; font-weight:600">Ask Greg (AI)</p>
+        <p class="fine" style="margin:0 0 14px" id="greg-gate-msg">The digital twin is for supporters. <a href="https://echoguard.ca/support.html">Become a supporter</a> to unlock it.</p>
+        <div style="margin:0 0 10px">
+          <a class="btn btn-ghost" href="https://echoguard.ca/support.html" target="_blank" rel="noopener">Donate (optional)</a>
+          <button class="btn btn-primary" id="start-greg-chat">Start chat</button>
+        </div>
+        <p class="fine" style="margin:0">Sessions are usage-based; this limits casual loads until liquidity improves.</p>
+      </div>
+      <div id="greg-ai-frame" style="display:none">
+        <iframe
+          src="https://lab.anam.ai/frame/27d8d9d5-e4eb-4fe7-ba6e-2a403d113064"
+          width="100%"
+          height="520"
+          allow="microphone"
+          style="border:1px solid var(--line); border-radius:14px; background:#0b1220"
+        ></iframe>
+      </div>
+      <script>
+        (function(){
+          try {
+            var gate = document.getElementById('greg-ai-gate');
+            var frameWrap = document.getElementById('greg-ai-frame');
+            var btn = document.getElementById('start-greg-chat');
+            var msg = document.getElementById('greg-gate-msg');
+            if (!gate || !frameWrap || !btn) return;
+            var returnUrl = encodeURIComponent(window.location.href);
+            btn.addEventListener('click', function(){
+              frameWrap.style.display = 'block';
+              gate.style.display = 'none';
+            });
+            fetch('/donor/check')
+              .then(function(r){ return r.json(); })
+              .then(function(d){
+                if (d && d.donor) {
+                  gate.style.display = 'none';
+                  frameWrap.style.display = 'block';
+                  return;
+                }
+                btn.disabled = true;
+                btn.textContent = 'Donors only';
+                if (msg) {
+                  msg.innerHTML = 'The digital twin is for supporters. <a href="https://echoguard.ca/support.html?return=' + returnUrl + '">Become a supporter</a> to unlock it.';
+                }
+              })
+              .catch(function(){
+                btn.disabled = true;
+                btn.textContent = 'Check failed';
+                if (msg) msg.textContent = 'Cannot verify access right now.';
+              });
+          } catch(e){}
+        })();
+
+      </script>
+    </div>
+    <p class="fine" style="margin-top:12px">Not ready for a session? The guides are free, the answer keys are pay-what-you-can, and the build session is $499 CAD &mdash; resolution, or no charge. Full library: <a href="https://voip.echoguard.ca">voip.echoguard.ca</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Greg by <a href="https://echoguard.ca">EchoGuard Communications</a> &mdash; the engineer you don&rsquo;t have to hire, on your box.</span>
+    <span>Text <a href="tel:+13438434440" style="color:inherit;text-decoration:none;">343-843-4440</a></span> <span style="opacity:.55">&middot;</span> <span><a href="mailto:kaiel@echoguard.ca" style="color:inherit;text-decoration:none;">kaiel@echoguard.ca</a></span> <span style="opacity:.55">&middot;</span> <span>greg.echoguard.ca</span> <span style="opacity:.55">&middot;</span> <a href="/login.html" style="color:inherit;text-decoration:none;">Beta sign in</a> <span style="opacity:.55">&middot;</span> <span>The knowledge is free. <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=shido6%40gmail.com&amp;item_name=Greg%20%E2%80%94%20keep%20it%20alive&amp;currency_code=CAD" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Keep it alive</a> &mdash; optional, no list, no gate.</span>
+  </div>
+</footer>
+
+<script src="reach.js?v=hq5"></script>
+</body>
+</html>

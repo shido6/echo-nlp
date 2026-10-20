@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-10-08T12:11:32Z",
+  "files": {
+    "connect.sh": "367293a4d4d17dd000e8349e3ec4707c822bc48d622fac2f1ae70de838845256",
+    "connector.py": "078dd64b7ae061449eedfabb1772a2935a61cb4db7a2576ecb4019caa1942085",
+    "examples": {
+      "asterisk": "2af734c36fdaebbdbcdf2633e22760f65f1c561f49f55304ef99352f0fa7b754",
+      "freepbx": "bc742dc498048a813d1f2692685fce3a9c097be730b29a979a2e08d7ba5889f4",
+      "freeswitch": "5c1527a6e29fa2b0d9e5079c6333787e7d9b2577ac0f9ad9e9b02fecc29436f5",
+      "kamailio": "3742eed800b6f5111d6b1487203358899c634ca418a1b5f556ceafa3b92e136a"
+    }
+  }
+}

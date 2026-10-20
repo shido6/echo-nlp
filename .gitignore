@@ -1,0 +1,12 @@
+# Editor and OS noise
+.DS_Store
+*.swp
+
+# Python bytecode from connector/build.py
+__pycache__/
+*.pyc
+
+# Local backups and environment
+*.bak
+*.bak-*
+.env

@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — the battle bridge | EchoGuard.ca</title>
+<meta name="description" content="The admin console: every tool, a minimal interface, natural language first. Ask, don't click.">
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --bg: #070b12;
+    --bg-soft: #0c121c;
+    --panel: rgba(20, 28, 40, 0.55);
+    --line: #223047;
+    --ink: #e8eef6;
+    --muted: #8b98ab;
+    --accent: #5eead4;
+    --accent-2: #38bdf8;
+    --good: #34d399;
+    --warn: #fbbf24;
+    --bad: #f87171;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 500px at 50% -10%, rgba(56, 189, 248, 0.07), transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  a { color: var(--accent-2); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(7, 11, 18, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  nav .links { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+  nav .links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav .links a:hover, nav .links a.on { color: var(--ink); }
+
+  header.hero { padding: 72px 0 48px; text-align: center; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px; font-weight: 700; color: var(--accent); margin: 0 0 18px; }
+  h1 { font-size: clamp(36px, 5.6vw, 60px); line-height: 1.08; letter-spacing: -0.025em; margin: 0 0 22px; }
+  .sub { font-size: clamp(17px, 2.2vw, 21px); color: var(--muted); max-width: 680px; margin: 0 auto 20px; }
+
+  .bridge-line {
+    max-width: 860px; margin: 26px auto 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13.5px; color: var(--accent);
+    background: rgba(94, 234, 212, 0.05);
+    border: 1px solid rgba(94, 234, 212, 0.16);
+    border-radius: 10px; padding: 12px 18px;
+  }
+  .bridge-line .muted { color: var(--muted); }
+
+  .gate {
+    max-width: 860px; margin: 22px auto 0; display: none;
+    background: rgba(248, 113, 113, 0.07);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 10px; padding: 14px 18px;
+    color: var(--bad); font-size: 15px; text-align: left;
+  }
+  .gate code { color: var(--ink); }
+
+  section { padding: 56px 0; }
+  section.soft { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  h2 { font-size: clamp(26px, 3.6vw, 36px); letter-spacing: -0.02em; margin: 0 0 14px; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 660px; margin: 0 0 36px; }
+  .center { text-align: center; }
+  .center .lede { margin-left: auto; margin-right: auto; }
+
+  .console {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+    padding: 28px; max-width: 780px; margin: 0 auto;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  }
+  .answer-head { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+  .answer p { margin: 0 0 12px; }
+  .fine { color: var(--muted); font-size: 13px; text-align: center; margin: 18px 0 0; }
+  .raw { color: var(--muted); font-size: 14px; }
+
+  .ask-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .ask-row input {
+    flex: 1; min-width: 220px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+    color: var(--ink); padding: 16px 18px; font-size: 17px; outline: none;
+  }
+  .ask-row input:focus { border-color: var(--accent-2); }
+  .btn {
+    display: inline-block; padding: 15px 28px; border-radius: 10px;
+    font-weight: 700; font-size: 16px; text-decoration: none; cursor: pointer; border: 0;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--accent-2); color: #04121d; }
+  .btn-primary:hover { background: #7dd3fc; }
+  .btn-ghost { background: transparent; color: var(--accent-2); border: 1px solid var(--accent-2); }
+  .btn-ghost:hover { background: rgba(56, 189, 248, 0.12); }
+  .btn-sm { padding: 9px 16px; font-size: 14px; border-radius: 8px; }
+  .suggest { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+  .suggest button {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 999px;
+    color: var(--muted); padding: 8px 16px; font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .suggest button:hover { color: var(--ink); border-color: var(--accent-2); }
+
+  /* The extension grid — attenuated windows.
+     Every tool is an extension you can dial.
+     Windows sit slightly dimmed until they matter. */
+  .ext-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 18px; max-width: 1120px; margin: 0 auto; }
+  .win {
+    background: var(--panel);
+    border: 1px solid rgba(94, 234, 212, 0.14);
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+    opacity: 0.92;
+    transition: opacity .25s ease, border-color .25s ease;
+  }
+  .win:hover, .win.hot { opacity: 1; border-color: rgba(94, 234, 212, 0.38); }
+  .win-head { display: flex; align-items: center; gap: 10px; padding: 16px 18px 0; }
+  .ext-tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px; color: var(--accent); border: 1px solid rgba(94, 234, 212, 0.35);
+    border-radius: 6px; padding: 2px 8px; letter-spacing: 0.08em; white-space: nowrap;
+  }
+  .win-head h3 { margin: 0; font-size: 17px; }
+  .win-head .win-sub { margin-left: auto; color: var(--muted); font-size: 12px; }
+  .win-body { padding: 14px 18px 18px; }
+  .win-body .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .win-body input, .win-body select {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    color: var(--ink); padding: 10px 12px; font-size: 14px; outline: none;
+    font-family: inherit; min-width: 0;
+  }
+  .win-body input:focus { border-color: var(--accent-2); }
+  .win-body .hint { color: var(--muted); font-size: 12.5px; margin: 6px 0 0; }
+
+  table.rows { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.rows th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  table.rows td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.rows tr:last-child td { border-bottom: 0; }
+  .status-ok { color: var(--good); font-weight: 600; }
+  .status-bad { color: var(--bad); font-weight: 600; }
+  .status-mut { color: var(--muted); }
+
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px; font-size: 14px; color: var(--muted); }
+
+  .dash-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-top: 14px; }
+  .tile { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .tile-num { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; word-break: break-word; }
+  .tile-label { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .tile-receipt { color: var(--accent); font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; margin-top: 8px; word-break: break-all; }
+
+  .cavalry { max-width: 720px; margin: 0 auto; text-align: center; }
+  .cavalry h2 { font-size: clamp(28px, 4.4vw, 42px); }
+  .cavalry p { color: var(--muted); font-size: 17px; }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  footer a { color: var(--muted); }
+
+  /* the correlation visual — the HEPIC picture: every
+     call a vertical ladder, both directions, color
+     coded by status, milliseconds between rungs */
+  .corr { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-top: 14px; }
+  .corr-head { padding: 9px 14px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); background: rgba(139, 152, 171, 0.05); }
+  .corr-head .mono { color: var(--accent-2); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .corr-rung { display: flex; gap: 12px; align-items: baseline; padding: 7px 14px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .corr-rung:last-child { border-bottom: 0; }
+  .corr-dir { flex: 0 0 14px; text-align: center; font-weight: 800; }
+  .corr-time { flex: 0 0 60px; color: var(--accent-2); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .corr-what { flex: 0 0 118px; font-weight: 700; }
+  .corr-detail { flex: 1; color: var(--muted); word-break: break-word; min-width: 0; }
+  .corr-delta { flex: 0 0 76px; text-align: right; color: var(--accent-2); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .corr-req .corr-dir { color: var(--accent-2); }
+  .corr-ok { background: rgba(52, 211, 153, 0.06); }
+  .corr-ok .corr-dir { color: var(--good); }
+  .corr-bad { background: rgba(248, 113, 113, 0.08); }
+  .corr-bad .corr-dir { color: var(--bad); }
+  .corr-mut .corr-dir { color: var(--muted); }
+
+  /* the correlation diagram — a sequence diagram: every
+     message an arrow between lifelines, colored by status,
+     milliseconds from call start down the left ruler */
+  .corr-svg { width: 100%; height: auto; display: block; background: rgba(139, 152, 171, 0.03); }
+  .corr-rail { stroke: #223047; stroke-width: 2; }
+  .corr-rail-label { fill: #8b98ab; font-size: 12.5px; font-weight: 700; }
+  .corr-arrow { stroke-width: 2.5; fill: none; }
+  .corr-arrow.corr-req { stroke: #38bdf8; }
+  .corr-arrow.corr-ok { stroke: #34d399; }
+  .corr-arrow.corr-bad { stroke: #f87171; }
+  .corr-arrow.corr-mut { stroke: #8b98ab; }
+  .corr-msg { font-size: 12px; font-weight: 700; }
+  .corr-msg.corr-req { fill: #38bdf8; }
+  .corr-msg.corr-ok { fill: #34d399; }
+  .corr-msg.corr-bad { fill: #f87171; }
+  .corr-msg.corr-mut { fill: #8b98ab; }
+  .corr-axis { fill: #8b98ab; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .corr-raw { border-top: 1px solid var(--line); }
+  .corr-raw summary { padding: 7px 14px; font-size: 12px; color: var(--muted); cursor: pointer; }
+
+  /* the voice lane — push to talk, answers speak back */
+  .voice-btn { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--muted); padding: 12px 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .voice-btn:hover { color: var(--ink); border-color: var(--accent-2); }
+  .voice-btn.listening { color: var(--bad); border-color: var(--bad); animation: pulse 1s infinite; }
+  .voice-btn.on { color: var(--accent-2); border-color: var(--accent-2); }
+
+  .src-line { margin: 8px 0 0; }
+  .chip { display: inline-block; font-size: 12px; font-weight: 600;
+          letter-spacing: .04em; text-transform: uppercase;
+          padding: 3px 9px; border-radius: 999px; }
+  .chip-records { color: var(--muted); border: 1px solid var(--line); }
+  .read-block { margin-top: 10px; padding: 12px 14px;
+                background: var(--bg-soft); border: 1px solid var(--line);
+                border-left: 3px solid var(--accent-2); border-radius: 8px; }
+  .chip-read { color: var(--accent-2); border: 1px solid var(--accent-2);
+               margin-bottom: 6px; }
+  .read { margin: 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .tile-num { font-size: 20px; }
+    .ext-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<style id="mobile-nav-b">/* MOBILE-NAV-B */
+
+@media (max-width: 900px) {
+  nav .wrap { flex-wrap: wrap; height: auto; padding: 10px 0; gap: 10px; }
+  nav .links { order: 3; width: 100%; margin-left: 0; display: flex; flex-wrap: nowrap;
+    gap: 8px; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  nav .links::-webkit-scrollbar { display: none; }
+  nav .links a { flex: 0 0 auto; font-size: 13px; line-height: 1.1; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px;
+    white-space: nowrap; }
+  nav .links a.on { color: var(--accent); border-color: var(--accent); }
+  nav .links a:hover { color: var(--ink); border-color: var(--muted); }
+  table.compare, table.rows { display: block; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html">Echo<span>.</span></a>
+    <div class="links">
+      <a href="manage.html">Management</a>
+      <a href="assist.html">Live Assist</a>
+      <a href="admin.html" class="on">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Admin console</p>
+    <h1>The battle bridge.</h1>
+    <p class="sub">Every tool. A minimal interface. Ask in plain language &mdash; don&rsquo;t click when you can ask. Every action is audited.</p>
+    <div class="bridge-line" id="bridge-line"><span class="muted">bringing the bridge online&hellip;</span></div>
+    <div class="gate" id="gate"></div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="center">
+      <p class="lede">The ask box is the primary control. The extensions below are the same tools, buttoned.</p>
+      <div class="console">
+        <div class="answer-head">Ask the console</div>
+        <div class="answer">
+          <div class="ask-row">
+            <input id="ask-input" type="text" placeholder="list users · balance of kaiel · allow ip 203.0.113.7 · clear rate limits" autocomplete="off">
+            <button class="btn btn-primary" id="ask-go">Ask</button>
+            <button id="voice-btn" class="voice-btn" type="button" title="Talk your question" aria-label="Talk your question" hidden>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </button>
+            <button id="voice-out" class="voice-btn" type="button" title="Speak answers aloud" aria-label="Speak answers aloud" aria-pressed="false" hidden>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            </button>
+          </div>
+          <div class="suggest">
+            <button data-q="list users">list users</button>
+            <button data-q="balance of kaiel">balance of kaiel</button>
+            <button data-q="whitelisted IPs">whitelisted IPs</button>
+            <button data-q="clear rate limits">clear rate limits</button>
+            <button data-q="admin log">admin log</button>
+          </div>
+          <p id="ask-answer" class="raw" style="margin-top:18px" aria-live="polite">Ask anything the console can do &mdash; users, balances, whitelist, blocks, rate limits, dashboards.</p>
+          <div class="src-line" id="ask-src" hidden><span class="chip chip-records">From your system's records</span></div>
+          <div class="read-block" id="ask-read-wrap" hidden>
+            <span class="chip chip-read">Greg's read</span>
+            <p class="read" id="ask-read" aria-live="polite"></p>
+          </div>
+          <div id="ask-corr"></div>
+          <p class="fine">Logic first, then the answer. The engine is gentle by design &mdash; cached, one attempt, no retries. Voice: push the mic and talk your question &mdash; answers can speak back; voice uses your browser&rsquo;s built-in speech service, audio stays between you and your browser.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>The extensions</h2>
+      <p class="lede">Every tool is an extension, numbered like a phone system. Dimmed windows are quiet; they brighten when there&rsquo;s something to do.</p>
+    </div>
+    <div class="ext-grid">
+
+      <div class="win" id="win-801">
+        <div class="win-head"><span class="ext-tag">EXT 801</span><h3>Whitelist</h3><span class="win-sub">who may administer</span></div>
+        <div class="win-body">
+          <div class="chips" id="wl-list"><span class="chip">loading&hellip;</span></div>
+          <div class="row" style="margin-top:12px">
+            <input id="wl-add" type="text" placeholder="203.0.113.7" class="mono">
+            <button class="btn btn-ghost btn-sm" id="wl-add-go">Allow</button>
+            <button class="btn btn-ghost btn-sm" id="wl-del-go">Remove</button>
+          </div>
+          <p class="hint">Localhost is always allowed. Your IP: <span id="wl-you">—</span></p>
+        </div>
+      </div>
+
+      <div class="win" id="win-802">
+        <div class="win-head"><span class="ext-tag">EXT 802</span><h3>Users</h3><span class="win-sub">the roster</span></div>
+        <div class="win-body">
+          <table class="rows"><thead><tr><th>User</th><th>Role</th><th>Tenant</th><th>Credits</th><th></th></tr></thead>
+          <tbody id="users-body"><tr><td colspan="5" class="status-mut">loading&hellip;</td></tr></tbody></table>
+          <div class="row" style="margin-top:12px">
+            <input id="us-add" type="text" placeholder="new username">
+            <button class="btn btn-ghost btn-sm" id="us-add-go">Create</button>
+          </div>
+          <p class="hint">A new password is shown once, at creation. Admins cannot remove themselves or the last admin.</p>
+        </div>
+      </div>
+
+      <div class="win" id="win-803">
+        <div class="win-head"><span class="ext-tag">EXT 803</span><h3>Balance &amp; funds</h3><span class="win-sub">credits, on the ledger</span></div>
+        <div class="win-body">
+          <div class="row">
+            <input id="bal-user" type="text" placeholder="username">
+            <button class="btn btn-ghost btn-sm" id="bal-go">Check</button>
+          </div>
+          <p id="bal-out" class="raw">—</p>
+          <div class="row" style="margin-top:8px">
+            <input id="funds-amt" type="number" step="1" placeholder="± credits" style="max-width:110px">
+            <button class="btn btn-ghost btn-sm" id="funds-add-go">Add</button>
+            <button class="btn btn-ghost btn-sm" id="funds-rem-go">Remove</button>
+          </div>
+          <p class="hint">Every adjustment lands on an append-only ledger with a reason. Balances never go below zero.</p>
+        </div>
+      </div>
+
+      <div class="win" id="win-804">
+        <div class="win-head"><span class="ext-tag">EXT 804</span><h3>Rate limits</h3><span class="win-sub">god mode</span></div>
+        <div class="win-body">
+          <div id="rl-body"><p class="raw">loading&hellip;</p></div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn btn-ghost btn-sm" id="rl-clear-all">Clear all buckets</button>
+          </div>
+          <p class="hint">Login attempts are limited per IP, questions per user, phone systems per user. Clearing is audited.</p>
+        </div>
+      </div>
+
+      <div class="win" id="win-805">
+        <div class="win-head"><span class="ext-tag">EXT 805</span><h3>IP blocks</h3><span class="win-sub">god mode</span></div>
+        <div class="win-body">
+          <div class="chips" id="blk-list"><span class="chip">loading&hellip;</span></div>
+          <div class="row" style="margin-top:12px">
+            <input id="blk-ip" type="text" placeholder="203.0.113.7" class="mono">
+            <button class="btn btn-ghost btn-sm" id="blk-go">Block</button>
+            <button class="btn btn-ghost btn-sm" id="unblk-go">Unblock</button>
+          </div>
+          <p class="hint">A blocked IP is refused at sign-in, questions, checkout and phone-system registration.</p>
+        </div>
+      </div>
+
+      <div class="win" id="win-806">
+        <div class="win-head"><span class="ext-tag">EXT 806</span><h3>Audit log</h3><span class="win-sub">every action</span></div>
+        <div class="win-body">
+          <div id="log-body"><p class="raw">loading&hellip;</p></div>
+        </div>
+      </div>
+
+      <div class="win" id="win-807" style="grid-column: 1 / -1">
+        <div class="win-head"><span class="ext-tag">EXT 807</span><h3>Dashboard composer</h3><span class="win-sub">ask for a dashboard in plain language</span></div>
+        <div class="win-body">
+          <div class="row">
+            <input id="dash-ask" type="text" placeholder="failed calls by the hour · money from orders · everything about the pipeline" style="flex:1">
+            <button class="btn btn-primary btn-sm" id="dash-go">Compose</button>
+          </div>
+          <div id="dash-body"><p class="raw">Ask for what you want to see &mdash; the composer builds it from the live pulses, with the receipt behind every number.</p></div>
+          <div class="row" style="margin-top:12px">
+            <input id="dash-name" type="text" placeholder="name to save it under" style="flex:1">
+            <button class="btn btn-ghost btn-sm" id="dash-save">Save this dashboard</button>
+          </div>
+          <div id="dash-saved" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="center">
+      <h2>What this console covers</h2>
+      <p class="lede">Honest edges, up front.</p>
+      <div class="tiles" style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+        <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">Credits</h3><p style="margin:0;color:var(--muted);font-size:14px">Admin-managed here, on an append-only ledger. Card payments still go through Stripe and PayPal &mdash; this is the internal balance, not a payment rail.</p></div>
+        <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">Tenants</h3><p style="margin:0;color:var(--muted);font-size:14px">God mode sees everything. A tenant admin sees and manages their own tenant&rsquo;s users and balances only.</p></div>
+        <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">Network</h3><p style="margin:0;color:var(--muted);font-size:14px">The whitelist, IP blocks and rate-limit resets are platform-level &mdash; god mode only, always audited.</p></div>
+        <div class="tile"><h3 style="margin:0 0 6px;font-size:16px">Access</h3><p style="margin:0;color:var(--muted);font-size:14px">Admin needs an admin account <em>and</em> a whitelisted network. Both, always. Localhost is always allowed &mdash; the box itself.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cavalry">
+  <div class="wrap">
+    <h2>There&rsquo;s no one to call.</h2>
+    <p><em>We&rsquo;re the cavalry.</em> The console is the tool &mdash; the team behind it is the escalation path.</p>
+    <p class="raw" style="margin-top:18px">Admin actions are audited to the second. If something looks wrong, the audit log (EXT 806) is the first place to look.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Echo by <a href="https://echoguard.ca">EchoGuard Communications</a> &mdash; the admin console, minimal by design.</span>
+    <span>echo.echoguard.ca</span> <span style="opacity:.55">&middot;</span> <a href="/login.html" style="color:inherit;text-decoration:none;">Beta sign in</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var gate = document.getElementById('gate');
+  var bridgeLine = document.getElementById('bridge-line');
+  var askInput = document.getElementById('ask-input');
+  var askAnswer = document.getElementById('ask-answer');
+  var askSrc = document.getElementById('ask-src');
+  var askReadWrap = document.getElementById('ask-read-wrap');
+  var askRead = document.getElementById('ask-read');
+  var lastComposed = null;
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function fmtClock(ts) {
+    return new Date(ts * 1000).toLocaleTimeString([], { hour12: false });
+  }
+
+  function showGate(msg, yourIp) {
+    gate.style.display = 'block';
+    gate.innerHTML = esc(msg) + (yourIp ? ' Your IP: <code>' + esc(yourIp) + '</code> — add it with EXT 801 (god mode) or from the box.' : '');
+  }
+
+  function adminFetch(path, opts) {
+    opts = opts || {};
+    return fetch(path, {
+      method: opts.method || 'GET',
+      headers: opts.body ? { 'Content-Type': 'application/json' } : {},
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function (r) {
+      return r.json().then(function (d) { return { status: r.status, data: d }; });
+    });
+  }
+
+  /* ---- the ask box (admin intents included) ---- */
+  function ask(q) {
+    if (!q) { return; }
+    askAnswer.textContent = 'Asking…';
+    askSrc.hidden = true;
+    askReadWrap.hidden = true;
+    fetch('/api/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: q })
+    }).then(function (r) {
+      if (r.status === 401) {
+        askAnswer.textContent = 'Sign in to ask.';
+        return null;
+      }
+      return r.json();
+    }).then(function (d) {
+      if (!d) { return; }
+      askAnswer.textContent = d.answer || 'No answer.';
+      askSrc.hidden = !d.records;
+      if (d.read) {
+        askRead.textContent = d.read;
+        askReadWrap.hidden = false;
+      } else {
+        askReadWrap.hidden = true;
+      }
+      if (d.engine === 'llm') {
+        askAnswer.textContent += '  ·  (the AI read it — the rules engine agrees when it can)';
+      }
+      if (d.engine === 'rules' && d.ai && d.ai.state === 'rate_limited') {
+        askAnswer.textContent += '  ·  (the AI reader is resting after a rate limit — the rules engine answered)';
+      }
+      renderDialogs(d.dialogs || [], 'ask-corr');
+      speak((d.answer || '') + (d.read ? " Greg's read: " + d.read : ''));
+    }).catch(function () {
+      askAnswer.textContent = 'The answer engine is unreachable right now.';
+    });
+  }
+  document.getElementById('ask-go').addEventListener('click', function () { ask(askInput.value.trim()); });
+  askInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { ask(askInput.value.trim()); }
+  });
+  document.querySelectorAll('.suggest button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      askInput.value = b.getAttribute('data-q');
+      ask(b.getAttribute('data-q'));
+    });
+  });
+
+  // The correlation visual — the HEPIC picture, drawn
+  // as a sequence diagram: every message an arrow between
+  // lifelines, colored by status, with the milliseconds
+  // from call start down the left ruler. The raw ladder
+  // stays one click away for text mode.
+  var svgSeq = 0;
+  function rungClass(what) {
+    var w = String(what || '').toLowerCase();
+    if (w.indexOf('reply') !== 0) { return 'corr-req'; }
+    if (/\b2\d\d\b/.test(w)) { return 'corr-ok'; }
+    if (/\b[45]\d\d\b/.test(w)) { return 'corr-bad'; }
+    return 'corr-mut';
+  }
+  function dialogSvg(dlg) {
+    var rungs = dlg.ladder;
+    svgSeq += 1;
+    var uid = 'h' + svgSeq;
+    var rails = [];
+    rungs.forEach(function (r) {
+      var m = /^from (.*?) to (.*?)$/.exec(r.detail || '');
+      if (m) {
+        if (rails.indexOf(m[1]) < 0) { rails.push(m[1]); }
+        if (rails.indexOf(m[2]) < 0) { rails.push(m[2]); }
+      }
+    });
+    if (rails.length < 2) { rails = ['this side', 'the other side']; }
+    var rowH = 46, top = 58, left = 148, right = 118, w = 760;
+    var h = top + rungs.length * rowH + 16;
+    var xs = rails.map(function (_, i) {
+      if (rails.length === 1) { return w / 2; }
+      return left + (w - left - right) * i / (rails.length - 1);
+    });
+    var p = [];
+    p.push('<svg viewBox="0 0 ' + w + ' ' + h + '" class="corr-svg" role="img" aria-label="Call correlation diagram, ' + esc(dlg.call_id) + '">');
+    p.push('<defs>' +
+      '<marker id="a-req-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#38bdf8"/></marker>' +
+      '<marker id="a-ok-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#34d399"/></marker>' +
+      '<marker id="a-bad-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#f87171"/></marker>' +
+      '<marker id="a-mut-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b98ab"/></marker>' +
+      '</defs>');
+    rails.forEach(function (name, i) {
+      p.push('<line x1="' + xs[i] + '" y1="' + (top - 16) + '" x2="' + xs[i] + '" y2="' + (h - 10) + '" class="corr-rail"/>');
+      p.push('<text x="' + xs[i] + '" y="' + (top - 26) + '" class="corr-rail-label" text-anchor="middle">' + esc(name) + '</text>');
+    });
+    rungs.forEach(function (r, i) {
+      var y = top + i * rowH + rowH / 2;
+      var cls = rungClass(r.what);
+      var m = /^from (.*?) to (.*?)$/.exec(r.detail || '');
+      var from = m ? rails.indexOf(m[1]) : 0;
+      var to = m ? rails.indexOf(m[2]) : (rails.length > 1 ? 1 : 0);
+      if (from < 0) { from = 0; }
+      if (to < 0) { to = 1 % rails.length; }
+      var x1 = xs[from];
+      var x2 = xs[to];
+      var mark = 'url(#a-' + cls.slice(5) + '-' + uid + ')';
+      if (from === to) {
+        p.push('<path d="M ' + x1 + ' ' + y + ' c 16 -12 30 -12 30 0 c 0 12 -14 12 -30 0" class="corr-arrow ' + cls + '" marker-end="' + mark + '"/>');
+      } else {
+        p.push('<line x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '" class="corr-arrow ' + cls + '" marker-end="' + mark + '"/>');
+      }
+      p.push('<text x="' + ((x1 + x2) / 2) + '" y="' + (y - 7) + '" class="corr-msg ' + cls + '" text-anchor="middle">' + esc(r.what) + '</text>');
+      p.push('<text x="8" y="' + (y + 4) + '" class="corr-axis">' + esc(r.time) + '  +' + (r.delta_ms || 0).toLocaleString() + ' ms</text>');
+    });
+    p.push('</svg>');
+    return p.join('');
+  }
+  function renderDialogs(dialogs, mountId) {
+    var box = document.getElementById(mountId);
+    if (!box) { return; }
+    if (!dialogs || !dialogs.length) { box.innerHTML = ''; return; }
+    box.innerHTML = dialogs.map(function (dlg) {
+      if (dlg.error || !dlg.ladder || !dlg.ladder.length) { return ''; }
+      var rows = dlg.ladder.map(function (r) {
+        return '<div class="corr-rung ' + rungClass(r.what) + '">' +
+          '<span class="corr-time">' + esc(r.time) + '</span>' +
+          '<span class="corr-what">' + esc(r.what) + '</span>' +
+          '<span class="corr-detail">' + esc(r.detail) + '</span>' +
+          '<span class="corr-delta">+' + (r.delta_ms || 0).toLocaleString() + ' ms</span></div>';
+      }).join('');
+      return '<div class="corr"><div class="corr-head">Call correlation' +
+        ' <span class="mono">' + esc(dlg.call_id) + '</span> · ' +
+        dlg.messages + ' messages over ' + (dlg.window_ms / 1000).toFixed(1) +
+        's</div>' + dialogSvg(dlg) +
+        '<details class="corr-raw"><summary>the raw ladder</summary>' + rows + '</details></div>';
+    }).join('');
+  }
+
+  // The voice lane — the TNG-computer interaction: push
+  // to talk, the answer speaks back. Client-side Web
+  // Speech API; audio stays between you and your
+  // browser's speech service. Spoken answers also make
+  // the console usable without looking at a screen.
+  var voiceOut = false;
+  var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recog = null;
+  var voiceBtn = document.getElementById('voice-btn');
+  var voiceOutBtn = document.getElementById('voice-out');
+  if (SpeechRec && voiceBtn) {
+    recog = new SpeechRec();
+    recog.lang = 'en-US';
+    recog.interimResults = false;
+    recog.maxAlternatives = 1;
+    voiceBtn.hidden = false;
+    recog.onresult = function (e) {
+      var t = e.results[0][0].transcript;
+      askInput.value = t;
+      ask(t);
+    };
+    recog.onend = function () { voiceBtn.classList.remove('listening'); };
+    recog.onerror = function () { voiceBtn.classList.remove('listening'); };
+    voiceBtn.addEventListener('click', function () {
+      if (!recog) { return; }
+      voiceBtn.classList.add('listening');
+      try { recog.start(); } catch (err) { voiceBtn.classList.remove('listening'); }
+    });
+  }
+  if ('speechSynthesis' in window && voiceOutBtn) {
+    voiceOutBtn.hidden = false;
+    voiceOutBtn.addEventListener('click', function () {
+      voiceOut = !voiceOut;
+      voiceOutBtn.classList.toggle('on', voiceOut);
+      voiceOutBtn.setAttribute('aria-pressed', voiceOut ? 'true' : 'false');
+      if (!voiceOut) { speechSynthesis.cancel(); }
+    });
+  }
+  function speak(text) {
+    if (!voiceOut || !text || !('speechSynthesis' in window)) { return; }
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+  }
+
+  /* ---- EXT 801: whitelist ---- */
+  function renderAllowlist(d) {
+    var you = document.getElementById('wl-you');
+    you.textContent = d.your_ip || '—';
+    var list = document.getElementById('wl-list');
+    if (d.ips && d.ips.length) {
+      list.innerHTML = d.ips.map(function (ip) { return '<span class="chip mono">' + esc(ip) + '</span>'; }).join('');
+    } else {
+      list.innerHTML = '<span class="chip">none — only localhost</span>';
+    }
+    var hot = document.getElementById('win-801');
+    hot.classList.toggle('hot', !!(d.ips && d.ips.length));
+  }
+  document.getElementById('wl-add-go').addEventListener('click', function () {
+    var ip = document.getElementById('wl-add').value.trim();
+    adminFetch('/api/admin/allowlist/add', { method: 'POST', body: { ip: ip } }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      refreshAll();
+    });
+  });
+  document.getElementById('wl-del-go').addEventListener('click', function () {
+    var ip = document.getElementById('wl-add').value.trim();
+    adminFetch('/api/admin/allowlist/remove', { method: 'POST', body: { ip: ip } }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      refreshAll();
+    });
+  });
+
+  /* ---- EXT 802: users ---- */
+  function renderUsers(d) {
+    var body = document.getElementById('users-body');
+    if (!d.users || !d.users.length) {
+      body.innerHTML = '<tr><td colspan="5" class="status-mut">no users on record</td></tr>';
+      return;
+    }
+    body.innerHTML = d.users.map(function (u) {
+      return '<tr><td class="mono">' + esc(u.user) + '</td>' +
+             '<td>' + (u.role === 'admin' ? '<span class="status-ok">admin</span>' : esc(u.role)) + '</td>' +
+             '<td>' + (esc(u.tenant) || '<span class="status-mut">—</span>') + '</td>' +
+             '<td>' + esc(u.credits) + '</td>' +
+             '<td><button class="btn btn-ghost btn-sm" data-remove-user="' + esc(u.user) + '">remove</button></td></tr>';
+    }).join('');
+    body.querySelectorAll('[data-remove-user]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (!confirm('Remove user ' + b.getAttribute('data-remove-user') + '? This cannot be undone.')) { return; }
+        adminFetch('/api/admin/users/remove', {
+          method: 'POST',
+          body: { username: b.getAttribute('data-remove-user') }
+        }).then(function (r) {
+          if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+          if (r.status >= 400) { alert(r.data.error); return; }
+          refreshAll();
+        });
+      });
+    });
+  }
+  document.getElementById('us-add-go').addEventListener('click', function () {
+    var name = document.getElementById('us-add').value.trim();
+    adminFetch('/api/admin/users/add', { method: 'POST', body: { username: name } }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      if (r.status >= 400) { alert(r.data.error); return; }
+      alert('User ' + r.data.user + ' created.\n\nPassword (shown once): ' + r.data.password);
+      document.getElementById('us-add').value = '';
+      refreshAll();
+    });
+  });
+
+  /* ---- EXT 803: balance & funds ---- */
+  var balUser = '';
+  document.getElementById('bal-go').addEventListener('click', function () {
+    balUser = document.getElementById('bal-user').value.trim().toLowerCase();
+    adminFetch('/api/admin/balance?user=' + encodeURIComponent(balUser)).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      document.getElementById('bal-out').textContent =
+        r.data.user + ' has ' + r.data.credits + ' credits.';
+    });
+  });
+  function adjustFunds(sign) {
+    var amt = parseInt(document.getElementById('funds-amt').value, 10);
+    if (!balUser) { alert('Check a balance first — type a username and press Check.'); return; }
+    if (!amt || amt <= 0) { alert('Give me a whole number of credits.'); return; }
+    var reason = prompt('Reason for the ledger (optional):', 'admin adjustment');
+    if (reason === null) { return; }
+    adminFetch('/api/admin/funds', {
+      method: 'POST',
+      body: { user: balUser, amount: sign * amt, reason: reason || 'admin adjustment' }
+    }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      if (r.status >= 400) { alert(r.data.error); return; }
+      document.getElementById('bal-out').textContent =
+        r.data.user + ' has ' + r.data.credits + ' credits.';
+      document.getElementById('funds-amt').value = '';
+    });
+  }
+  document.getElementById('funds-add-go').addEventListener('click', function () { adjustFunds(1); });
+  document.getElementById('funds-rem-go').addEventListener('click', function () { adjustFunds(-1); });
+
+  /* ---- EXT 804: rate limits ---- */
+  function renderRateLimits(d) {
+    var body = document.getElementById('rl-body');
+    var parts = [];
+    parts.push('<p class="raw" style="margin:0 0 6px"><b>Login attempts by IP</b></p>');
+    parts.push(chipLine(d.login_by_ip));
+    parts.push('<p class="raw" style="margin:10px 0 6px"><b>Questions by user</b></p>');
+    parts.push(chipLine(d.query_by_user));
+    parts.push('<p class="raw" style="margin:10px 0 6px"><b>Phone systems by user</b></p>');
+    parts.push(chipLine(d.nodes_by_user));
+    body.innerHTML = parts.join('');
+    document.getElementById('win-804').classList.toggle('hot',
+      !!(d.login_by_ip && Object.keys(d.login_by_ip).length) ||
+      !!(d.query_by_user && Object.keys(d.query_by_user).length) ||
+      !!(d.nodes_by_user && Object.keys(d.nodes_by_user).length));
+  }
+  function chipLine(obj) {
+    if (!obj || !Object.keys(obj).length) {
+      return '<span class="chip">none in force</span>';
+    }
+    return Object.keys(obj).map(function (k) {
+      return '<span class="chip mono" title="' + obj[k] + ' attempts">' + esc(k) + ' · ' + obj[k] + '</span>';
+    }).join('');
+  }
+  document.getElementById('rl-clear-all').addEventListener('click', function () {
+    if (!confirm('Clear every rate-limit bucket? Audited.')) { return; }
+    adminFetch('/api/admin/rate-limit/reset', { method: 'POST', body: {} }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      refreshAll();
+    });
+  });
+
+  /* ---- EXT 805: IP blocks ---- */
+  function renderBlocked(d) {
+    var list = document.getElementById('blk-list');
+    if (d.blocked && d.blocked.length) {
+      list.innerHTML = d.blocked.map(function (ip) { return '<span class="chip mono" style="border-color:rgba(248,113,113,.4);color:var(--bad)">' + esc(ip) + '</span>'; }).join('');
+    } else {
+      list.innerHTML = '<span class="chip">nothing blocked</span>';
+    }
+    document.getElementById('win-805').classList.toggle('hot', !!(d.blocked && d.blocked.length));
+  }
+  document.getElementById('blk-go').addEventListener('click', function () {
+    var ip = document.getElementById('blk-ip').value.trim();
+    var reason = prompt('Why is this IP blocked?', 'abuse');
+    if (reason === null) { return; }
+    adminFetch('/api/admin/ip/block', { method: 'POST', body: { ip: ip, reason: reason || 'abuse' } }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      if (r.status >= 400) { alert(r.data.error); return; }
+      refreshAll();
+    });
+  });
+  document.getElementById('unblk-go').addEventListener('click', function () {
+    var ip = document.getElementById('blk-ip').value.trim();
+    adminFetch('/api/admin/ip/unblock', { method: 'POST', body: { ip: ip } }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      if (r.status >= 400) { alert(r.data.error); return; }
+      refreshAll();
+    });
+  });
+
+  /* ---- EXT 806: audit log ---- */
+  function renderLog(d) {
+    var body = document.getElementById('log-body');
+    if (!d.log || !d.log.length) {
+      body.innerHTML = '<p class="raw">No admin actions on record yet.</p>';
+      return;
+    }
+    body.innerHTML = d.log.map(function (row) {
+      return '<div class="ev" style="display:flex;gap:14px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px;align-items:baseline">' +
+        '<span class="mono" style="color:var(--accent-2);flex:0 0 70px">' + esc(fmtClock(row.ts)) + '</span>' +
+        '<span style="color:var(--ink);font-weight:600;flex:0 0 110px">' + esc(row.action) + '</span>' +
+        '<span style="color:var(--muted);flex:1;word-break:break-word">' + esc(row.detail || row.user || '') +
+        ' <span style="opacity:.65">· ' + esc(row.user) + ' from ' + esc(row.ip) + '</span></span></div>';
+    }).join('');
+  }
+
+  /* ---- EXT 807: dashboard composer ---- */
+  document.getElementById('dash-go').addEventListener('click', function () {
+    var askText = document.getElementById('dash-ask').value.trim();
+    if (!askText) { return; }
+    adminFetch('/api/admin/dashboards/compose', { method: 'POST', body: { ask: askText } }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      lastComposed = r.data;
+      renderComposed(r.data);
+    });
+  });
+  function renderComposed(d) {
+    var body = document.getElementById('dash-body');
+    if (!d.panels || !d.panels.length) {
+      body.innerHTML = '<p class="raw">Nothing matched — try words like "calls", "failed", "money", "orders", "systems", "jobs".</p>';
+      return;
+    }
+    body.innerHTML = '<p class="raw" style="margin-bottom:4px">Dashboard for: <b style="color:var(--ink)">' + esc(d.ask) + '</b></p>' +
+      '<div class="dash-tiles">' + d.panels.map(function (p) {
+        return '<div class="tile"><div class="tile-num">' + esc(p.value) + '</div>' +
+               '<div class="tile-label">' + esc(p.title) + '</div>' +
+               '<div class="tile-receipt">' + esc(p.query) + '</div></div>';
+      }).join('') + '</div>';
+  }
+  document.getElementById('dash-save').addEventListener('click', function () {
+    if (!lastComposed) { alert('Compose a dashboard first.'); return; }
+    var name = document.getElementById('dash-name').value.trim();
+    if (!name) { alert('Give it a name to save it under.'); return; }
+    adminFetch('/api/admin/dashboards/save', {
+      method: 'POST',
+      body: { name: name, ask: lastComposed.ask, panels: lastComposed.panels }
+    }).then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); return; }
+      if (r.status >= 400) { alert(r.data.error); return; }
+      document.getElementById('dash-saved').innerHTML =
+        '<p class="raw" style="color:var(--good)">Saved as “' + esc(r.data.saved.name) + '”.</p>' + renderSaved();
+    });
+  });
+
+  function renderSaved() {
+    return ''; // saved dashboards list reloads with refreshAll
+  }
+  function renderDashboards(d) {
+    var box = document.getElementById('dash-saved');
+    if (!d.dashboards || !d.dashboards.length) { box.innerHTML = ''; return; }
+    box.innerHTML = '<div class="chips" style="margin-top:6px">' + d.dashboards.map(function (dash) {
+      return '<span class="chip" title="' + esc(dash.ask || '') + '">' + esc(dash.name) + ' <span style="opacity:.6">· ' + esc(dash.by) + '</span></span>';
+    }).join('') + '</div>';
+  }
+
+  /* ---- the bridge line: 3-second comprehension ---- */
+  function renderBridge(users, allow, blocked, limits, log) {
+    var parts = [];
+    parts.push((users.users ? users.users.length : 0) + ' user' + (users.users && users.users.length === 1 ? '' : 's'));
+    parts.push((allow.ips ? allow.ips.length : 0) + ' whitelisted IP' + (allow.ips && allow.ips.length === 1 ? '' : 's'));
+    parts.push((blocked.blocked ? blocked.blocked.length : 0) + ' blocked IP' + (blocked.blocked && blocked.blocked.length === 1 ? '' : 's'));
+    var buckets = 0;
+    ['login_by_ip', 'query_by_user', 'nodes_by_user'].forEach(function (k) {
+      if (limits[k]) { buckets += Object.keys(limits[k]).length; }
+    });
+    parts.push(buckets + ' rate-limit bucket' + (buckets === 1 ? '' : 's'));
+    if (log.log && log.log.length) {
+      var last = log.log[0];
+      parts.push('last: ' + last.action + (last.detail ? ' ' + last.detail : '') + ' from ' + last.ip);
+    } else {
+      parts.push('no admin actions yet');
+    }
+    bridgeLine.innerHTML = '<span class="muted">bridge&nbsp;·&nbsp;</span>' + esc(parts.join(' &nbsp;·&nbsp; '));
+  }
+
+  /* ---- refresh everything, gently ---- */
+  var refreshTimer = null;
+  function refreshAll() {
+    var u, a, b, l, g;
+    adminFetch('/api/admin/users').then(function (r) {
+      if (r.status === 403) { showGate(r.data.error, r.data.your_ip); }
+      if (r.status === 200) { renderUsers(r.data); u = r.data; }
+    });
+    adminFetch('/api/admin/allowlist').then(function (r) {
+      if (r.status === 200) { renderAllowlist(r.data); a = r.data; }
+      else if (r.status === 403) { showGate(r.data.error, r.data.your_ip); }
+    });
+    adminFetch('/api/admin/blocked').then(function (r) {
+      if (r.status === 200) { renderBlocked(r.data); b = r.data; }
+    });
+    adminFetch('/api/admin/rate-limits').then(function (r) {
+      if (r.status === 200) { renderRateLimits(r.data); l = r.data; }
+    });
+    adminFetch('/api/admin/log').then(function (r) {
+      if (r.status === 200) { renderLog(r.data); g = r.data; }
+    });
+    adminFetch('/api/admin/dashboards').then(function (r) {
+      if (r.status === 200) { renderDashboards(r.data); }
+    });
+    // The bridge line needs all five — wait a beat for them to land.
+    setTimeout(function () {
+      if (u && a && b && l && g) { renderBridge(u, a, b, l, g); }
+      else if (u && a && b && l) { renderBridge(u, a, b, l, { log: [] }); }
+    }, 350);
+  }
+
+  refreshAll();
+  refreshTimer = setInterval(refreshAll, 15000);
+})();
+</script>
+</body>
+</html>

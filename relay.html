@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relay &mdash; your phone system, covered | EchoGuard.ca</title>
+<meta name="description" content="Echo sees it. Greg fixes it. Forge builds it. Live Assist joins it. Listen, whisper, or barge into a live call from a softphone &mdash; live on our lab today; everything else is labeled honestly.">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg-soft: #10161f;
+    --panel: #141c28;
+    --line: #243042;
+    --ink: #e8eef6;
+    --muted: #8b98ab;
+    --accent: #38bdf8;
+    --accent-deep: #0284c7;
+    --good: #34d399;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* nav */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10, 14, 20, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  nav .links { margin-left: auto; display: flex; gap: 20px; }
+  nav .links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav .links a:hover { color: var(--ink); }
+
+  /* waveform */
+  .wave { display: flex; align-items: center; gap: 4px; height: 34px; }
+  .wave i {
+    width: 4px; border-radius: 2px; background: var(--accent);
+    animation: bar 1.1s ease-in-out infinite;
+  }
+  .wave i:nth-child(3n) { animation-delay: 0.15s; }
+  .wave i:nth-child(3n+1) { animation-delay: 0.3s; }
+  .wave i:nth-child(4n) { animation-delay: 0.45s; }
+  @keyframes bar { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+
+  /* hero */
+  header.hero { padding: 96px 0 72px; text-align: center; }
+  header.hero .wave { justify-content: center; margin-bottom: 28px; }
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px;
+    font-weight: 700; color: var(--accent); margin: 0 0 18px;
+  }
+  h1 { font-size: clamp(36px, 5.6vw, 60px); line-height: 1.08; letter-spacing: -0.025em; margin: 0 0 22px; }
+  .sub { font-size: clamp(17px, 2.2vw, 21px); color: var(--muted); max-width: 660px; margin: 0 auto 36px; }
+  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 14px 30px; border-radius: 10px;
+    font-weight: 700; font-size: 16px; text-decoration: none; cursor: pointer; border: 0;
+  }
+  .btn-primary { background: var(--accent); color: #04121d; }
+  .btn-primary:hover { background: #7dd3fc; }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn-ghost:hover { background: rgba(56, 189, 248, 0.12); }
+  .fine { color: var(--muted); font-size: 13px; text-align: center; margin: 18px 0 0; }
+
+  .chips { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 34px; }
+  .chip {
+    border: 1px solid var(--line); background: var(--panel); border-radius: 999px;
+    padding: 8px 20px; font-size: 14px; color: var(--muted);
+  }
+  .chip strong { color: var(--accent); font-weight: 700; }
+
+  section { padding: 72px 0; }
+  section.soft { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  h2 { font-size: clamp(26px, 3.6vw, 36px); letter-spacing: -0.02em; margin: 0 0 14px; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 640px; margin: 0 0 40px; }
+  .center { text-align: center; }
+  .center .lede { margin-left: auto; margin-right: auto; }
+
+  /* grids */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* status tags */
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; border-radius: 999px; padding: 3px 12px; margin-bottom: 10px;
+  }
+  .tag-live { background: rgba(52, 211, 153, 0.12); color: var(--good); border: 1px solid var(--good); }
+  .tag-beta { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+
+  /* steps */
+  .step { display: flex; gap: 18px; margin-bottom: 26px; }
+  .step-num {
+    flex: 0 0 44px; height: 44px; border-radius: 50%;
+    background: rgba(56, 189, 248, 0.14); border: 1px solid var(--accent);
+    color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;
+  }
+  .step-body h3 { margin: 8px 0 4px; font-size: 18px; }
+  .step-body p { margin: 0; color: var(--muted); }
+
+  .mode { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin: 0 0 6px; }
+
+  .pull {
+    max-width: 720px; margin: 40px auto 0; padding: 28px 32px;
+    background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+    border-radius: 12px; text-align: left;
+  }
+  .pull p { margin: 0 0 8px; font-size: 19px; font-style: italic; color: var(--ink); }
+  .pull cite { color: var(--muted); font-size: 14px; font-style: normal; }
+
+  .beta-cta { text-align: center; }
+  .beta-cta .lede { margin: 0 auto 32px; }
+  .beta-cta .btn-ghost { margin-left: 12px; }
+
+  .code-line {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px; color: var(--ink); overflow-x: auto; margin: 12px 0;
+  }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 640px) {
+    nav .links { gap: 14px; }
+  }
+</style>
+
+<style id="mobile-nav-b">/* MOBILE-NAV-B */
+
+@media (max-width: 900px) {
+  nav .wrap { flex-wrap: wrap; height: auto; padding: 10px 0; gap: 10px; }
+  nav .links { order: 3; width: 100%; margin-left: 0; display: flex; flex-wrap: nowrap;
+    gap: 8px; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  nav .links::-webkit-scrollbar { display: none; }
+  nav .links a { flex: 0 0 auto; font-size: 13px; line-height: 1.1; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px;
+    white-space: nowrap; }
+  nav .links a.on { color: var(--accent); border-color: var(--accent); }
+  nav .links a:hover { color: var(--ink); border-color: var(--muted); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="relay.html">Relay<span>.</span></a>
+    <div class="links">
+      <a href="#bundle">The bundle</a>
+      <a href="#how">How it works</a>
+      <a href="#console">The console</a>
+      <a href="#crew">The crew</a>
+      <a href="#intel">Caller intel</a>
+      <a href="#live">What&rsquo;s live</a>
+      <a href="https://echo.echoguard.ca/">Echo</a>
+      <a href="https://greg.echoguard.ca/">Greg</a>
+      <a href="https://forge.echoguard.ca/">Forge</a>
+      <a href="https://voip.echoguard.ca/order.html">Pricing</a>
+      <a href="https://echo.echoguard.ca/login.html">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="wave" aria-hidden="true">
+      <i style="height:40%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:85%"></i><i style="height:45%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:80%"></i><i style="height:35%"></i><i style="height:75%"></i><i style="height:50%"></i><i style="height:90%"></i><i style="height:40%"></i>
+    </div>
+    <p class="eyebrow">From EchoGuard.ca</p>
+    <h1>Relay &mdash; your phone system, covered.</h1>
+    <p class="sub">Echo sees it. Greg fixes it. Forge builds it. Live Assist joins it. One product, one founder, one AI &mdash; against the 33-employee suites.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Relay%20%E2%80%94%20I%20want%20the%20whole%20relay">Get the relay</a>
+      <a class="btn btn-ghost" href="#live">What&rsquo;s live today</a>
+    </div>
+    <p class="fine">Live Assist is real on our own lab today: listen, whisper, or barge into a live call from a softphone. Everything else on this page is tagged &mdash; nothing is sold as built when it isn&rsquo;t.</p>
+  </div>
+</header>
+
+<section id="bundle">
+  <div class="wrap">
+    <div class="center">
+      <h2>The bundle</h2>
+      <p class="lede">Four products, one relay. Echo, Greg, Forge, and Live Assist &mdash; bundled, so you never meet a 33-person company.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Echo</h3>
+        <p>Ask your phone system anything &mdash; in plain language, with receipts. The eyes and ears.</p>
+        <p style="margin-top:12px"><a href="https://echo.echoguard.ca/">Meet Echo &rarr;</a></p>
+      </div>
+      <div class="card">
+        <h3>Greg</h3>
+        <p>The engineer you don&rsquo;t have to hire. Answers in seconds, with 20+ years of telecom baked in.</p>
+        <p style="margin-top:12px"><a href="https://greg.echoguard.ca/">Meet Greg &rarr;</a></p>
+      </div>
+      <div class="card">
+        <h3>Forge</h3>
+        <p>Build your own voice AI in your cloud or on your Linux box &mdash; and own it forever.</p>
+        <p style="margin-top:12px"><a href="https://forge.echoguard.ca/">Forge your own &rarr;</a></p>
+      </div>
+      <div class="card">
+        <h3>Live Assist</h3>
+        <p>A human on the line in seconds &mdash; listen, whisper, or barge into a live call from your own softphone.</p>
+        <p style="margin-top:12px"><a href="#live">See what&rsquo;s live &rarr;</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="why" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>The human lane</h2>
+      <p class="lede">Sometimes your caller doesn&rsquo;t want a machine. They want a person. The old ways charge you for the whole building &mdash; or start the human cold.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>The old answering service</h3>
+        <p>Humans reading scripts they&rsquo;ve never seen, about a system they&rsquo;ve never touched. Every call starts from zero &mdash; and your caller can hear it.</p>
+      </div>
+      <div class="card">
+        <h3>The big contact-center suite</h3>
+        <p>33+ employees, a dozen modules, channels you&rsquo;ll never use, integrations you&rsquo;ll never configure &mdash; and a seat price for every agent. Overhead galore.</p>
+      </div>
+      <div class="card">
+        <h3>The middle way</h3>
+        <p class="own"><strong>AI first, human in seconds, on your own phone system.</strong> The AI is the expert. The human is the connection. No suite, no seats, no cold start.</p>
+      </div>
+    </div>
+    <blockquote class="pull">
+      <p>&ldquo;It&rsquo;s like companies have engineered a system to get people as pissed off as possible before they get to speak to a person.&rdquo;</p>
+      <cite>&mdash; a service worker, Reddit</cite>
+    </blockquote>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="lede">Four steps. The human joins with the full story &mdash; not a ticket, not a guess. Step 1 and the join in step 3 are live on the lab; the briefing panes roll out with the beta.</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <span class="tag tag-live">Live on the lab</span>
+        <h3>The AI answers</h3>
+        <p>Your voice agent picks up on your own system &mdash; the receptionist path, already wired. It greets, triages, and troubleshoots in plain language.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>The trigger fires</h3>
+        <p>The caller asks for a human, asks the same thing twice, or the call sours &mdash; money, emergency, complaint, &ldquo;manager&rdquo;. Or your own rule. You set the triggers.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <span class="tag tag-live">Live on the lab</span>
+        <h3>Your engineer joins &mdash; silently, then at the depth they choose</h3>
+        <p>From a softphone, dial <span class="mono">*88</span> while a call is live on the desk phone. It joins with no beep and no second voice. Then press <span class="mono">5</span> to whisper to the leg or <span class="mono">6</span> to barge in. The briefed pane &mdash; live transcript, Greg&rsquo;s diagnosis, the matched script &mdash; rolls out with the beta.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>Resolved &mdash; and logged</h3>
+        <p>Every word flows back into Echo. Who joined, when, what happened, how it ended. Coaching, QA, and insight from evidence &mdash; not from sampled calls.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="modes" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>Four ways in</h2>
+      <p class="lede">The engineer picks the right amount of human, call by call. Three of the four are live on the lab right now; the fourth is rolling out.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <span class="tag tag-live">Live on the lab</span>
+        <p class="mode">Listen</p>
+        <h3>Silent monitor</h3>
+        <p>The engineer hears both directions of the call without a sound. Quiet join &mdash; no beep. The caller hears one voice: the AI. Press <span class="mono">4</span> while spying.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-live">Live on the lab</span>
+        <p class="mode">Whisper</p>
+        <h3>Coach the leg</h3>
+        <p>The engineer speaks to the spied-on leg &mdash; the AI or the desk phone &mdash; guiding it without the caller hearing a second voice. Press <span class="mono">5</span> while spying.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-live">Live on the lab</span>
+        <p class="mode">Barge</p>
+        <h3>Take over</h3>
+        <p>The human steps in and talks to the caller directly &mdash; for the money conversation, the angry caller, the &ldquo;get me a person&rdquo; moment. Press <span class="mono">6</span> while spying.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <p class="mode">Conference</p>
+        <h3>Three-way</h3>
+        <p>Caller + AI + human in one bridge, with the moderator able to eject legs and the context riding along. The one mode not yet built.</p>
+      </div>
+    </div>
+    <p class="fine">One dial, three depths: <span class="mono">*88</span> joins silently; <span class="mono">4 / 5 / 6</span> choose listen, whisper, or barge mid-call; <span class="mono">*</span> moves to the next channel.</p>
+  </div>
+</section>
+
+<section id="console">
+  <div class="wrap">
+    <div class="center">
+      <h2>The engineer&rsquo;s screen</h2>
+      <p class="lede">Phase 1 is a softphone and a browser. Presence and the caller pane are live; the richer panes are the beta build.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>Live calls</h3>
+        <p>The queue and every call in progress. Depth, waits, who&rsquo;s ringing. The wallboard the suites charge a module for &mdash; one pane, no seats.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>Live transcript</h3>
+        <p>The call, as it happens. What the caller said, what the AI answered, where it stumbled. Read the last ten seconds before you speak.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>Greg&rsquo;s diagnosis</h3>
+        <p>The running intent, the evidence, the likely cause &mdash; the same plain-language answers Echo gives you, on the engineer&rsquo;s screen, in real time.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>The script</h3>
+        <p>Matched to this caller&rsquo;s intent, with readback prompts built in. The human adapts within the script &mdash; and never starts cold.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-live">Live on the lab</span>
+        <h3>Presence</h3>
+        <p>Online, busy, wrapping up, not-ready &mdash; the engineer&rsquo;s own state, with honest staleness. Plus the caller pane: the last hour of call attempts, straight from the phone-system telemetry.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-live">Live on the lab</span>
+        <h3>Pick your depth, mid-call</h3>
+        <p>Listen, whisper, barge &mdash; a DTMF press each, no re-dial. Conference rolls out with the beta; every mode change is logged as a wrap-up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="script" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>Scripts that never start cold</h2>
+      <p class="lede">The old model: a person, a paper script, a guess. Our model: the script finds the human. Rolling out with the beta.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Greg matches the script</h3>
+        <p>The caller&rsquo;s intent picks the playbook &mdash; billing, outage, provisioning, readback. Your playbooks, our matching.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>The human reads &mdash; and adapts</h3>
+        <p>Readback prompts confirm numbers and details. The engineer adapts within the script; they don&rsquo;t invent policy on the fly.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Every gap becomes a fix</h3>
+        <p>A question the script couldn&rsquo;t answer is flagged, fixed, and shipped. The product improves from every call &mdash; that&rsquo;s the flywheel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="crew">
+  <div class="wrap">
+    <div class="center">
+      <h2>One founder. One AI. Your crew.</h2>
+      <p class="lede">The suites need 33 people and a sales team to do this. We need one founder, one AI, and a crew that works from home. That&rsquo;s the why &mdash; the crew, QA, and managed shifts roll out with the beta.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>We hire the crew</h3>
+        <p>Remote engineers &mdash; a softphone and a browser is the whole skill set. No call-center resume required. We train them on your playbooks and Echo&rsquo;s evidence.</p>
+      </div>
+      <div class="card">
+        <h3>The AI is the expert</h3>
+        <p>Your engineers don&rsquo;t need 20 years of telecom &mdash; the AI carries the knowledge. The human carries the connection. That&rsquo;s the division of labor that makes a small team scale.</p>
+      </div>
+      <div class="card">
+        <h3>Managed, not just staffed</h3>
+        <p>Shifts, presence, wrap-up codes, SLA flags, QA scores. A five-person crew that behaves like a fifty-seat center &mdash; because the wallboard never sleeps.</p>
+      </div>
+    </div>
+    <div class="cta-row" style="justify-content:center;margin-top:36px">
+      <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Live%20Assist%20%E2%80%94%20I%20want%20to%20work%20from%20home">Join the crew</a>
+      <span class="fine" style="margin:0">Work from home. Softphone + browser. We&rsquo;ll teach the rest.</span>
+    </div>
+  </div>
+</section>
+
+<section id="intel" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>Due diligence on every call</h2>
+      <p class="lede">Before the human speaks, the relay can tell them what the number says &mdash; public signals only, every one listed. The number read is live; tone and lead-scoring roll out with the beta.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <span class="tag tag-live">Live on the lab</span>
+        <h3>The number</h3>
+        <p>Geography, area code, and timezone from public tables, in seconds &mdash; every field sourced. What we can&rsquo;t yet read (line type, reputation) says so instead of guessing.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>The tone</h3>
+        <p>Inflection, pace, and stress in the caller&rsquo;s voice &mdash; calm, rushed, frustrated, undecided. A signal, never a verdict: it tells the AI to slow down, and the human when to join.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>The read</h3>
+        <p>For sales calls: a lead-quality read &mdash; need, timeline, fit &mdash; with every signal listed, so the agent sees why, not just what.</p>
+      </div>
+    </div>
+    <blockquote class="pull">
+      <p>A phone number is not a credit report.</p>
+      <cite>We score the call from public signals and the conversation &mdash; never from financial data we have no right to touch. No credit pulls. No asking for details the call doesn&rsquo;t need.</cite>
+    </blockquote>
+  </div>
+</section>
+
+<section id="tracking">
+  <div class="wrap">
+    <div class="center">
+      <h2>Every human action, tracked</h2>
+      <p class="lede">What gets measured gets coached. What gets coached gets better. The audit trail is live; the analytics roll out with the beta.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <span class="tag tag-live">Live on the lab</span>
+        <h3>The audit trail</h3>
+        <p>Who assisted, when, and why &mdash; every assist action logged as a wrap-up, with the operator&rsquo;s presence state, straight from the backend.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>Real-time insight</h3>
+        <p>Live queue depth, at-risk waits, assists in progress. Supervisors see it as it happens &mdash; not in tomorrow&rsquo;s report.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>Quality from evidence</h3>
+        <p>Script adherence, resolution, tone, readback accuracy &mdash; scored from the log and recording. Coach the outlier calls, not the lucky sample.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="honest" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>The honest part</h2>
+      <p class="lede">Human connection means human honesty. Here&rsquo;s what we hold the line on.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Callers always know</h3>
+        <p>When a human takes over, we say so. No fake-AI deception &mdash; a human is a human, and the caller hears it.</p>
+      </div>
+      <div class="card">
+        <h3>Consent is yours</h3>
+        <p>Recording announcements and monitoring rules are configured per customer. Barge-in starts listen-only; whisper and barge only where you allow it.</p>
+      </div>
+      <div class="card">
+        <h3>Card numbers never reach a human</h3>
+        <p>Payment stays in the IVR with masked keypad entry. Humans step out for the numbers &mdash; PCI stays clean.</p>
+      </div>
+      <div class="card">
+        <h3>911 stays human</h3>
+        <p>Emergencies are always owned by a person. The AI opens the door; a human takes the call.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="live" class="soft">
+  <div class="wrap">
+    <div class="center">
+      <h2>Honest build state</h2>
+      <p class="lede">No page here claims a working console today. This is the exact line between built and promised.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <span class="tag tag-live">Live on the lab</span>
+        <h3>What runs today</h3>
+        <p>Listen, whisper, and barge into a live call from a softphone (<span class="mono">*88</span>). The caller pane (last hour of call attempts from telemetry). Public-geography number read. Operator presence and the wrap-up audit trail. The AI receptionist on the lab phone system and the Reach-Greg site bridge.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Rolling out with the beta</span>
+        <h3>What&rsquo;s specced, not built</h3>
+        <p>Conference mode. The live transcript pane, script matching, and Greg&rsquo;s on-screen diagnosis. The live-calls queue and wallboard. Tone analysis and lead-quality scoring. Real-time supervisor insight and quality-from-evidence. The hired crew and managed shifts.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-beta">Always</span>
+        <h3>The rule</h3>
+        <p>Nothing is sold as built when it isn&rsquo;t. If a mode, a pane, or a promise is still ahead of us, it wears the beta tag &mdash; or it isn&rsquo;t on the page.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="start" class="soft beta-cta">
+  <div class="wrap">
+    <h2>The only choice that makes sense</h2>
+    <p class="lede">The AI leads. The human joins in seconds. Your phone system stays yours. Live Assist is booked by the shift &mdash; a suggested ~$149, because humans cost real money and we say so out loud. Dedicated crews and high-volume queues: ask.</p>
+    <div class="cta-row" style="justify-content:center">
+      <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Live%20Assist%20%E2%80%94%20A%20human%20on%20my%20line">Ask about Live Assist</a>
+      <a class="btn btn-ghost" href="mailto:sales@echoguard.ca?subject=Live%20Assist%20%E2%80%94%20I%20want%20to%20work%20from%20home">Join the crew</a>
+      <a class="btn btn-ghost" href="https://greg.echoguard.ca/">Meet Greg</a>
+      <a class="btn btn-ghost" href="https://forge.echoguard.ca/">Forge your own</a>
+    </div>
+    <p style="margin-top:22px;font-size:15px;line-height:1.7">Phones broken right now? The one service: I come in on your live system and we fix it in one sitting &mdash; even if you&rsquo;ve never touched a dialplan. You watch every step and leave knowing how it works. <strong style="color:var(--accent)">Resolution, or no charge.</strong></p>
+    <div class="cta-row" style="justify-content:center;margin-top:14px">
+      <a class="btn btn-primary" href="https://voip.echoguard.ca/order.html#build">Book a build session &mdash; $499 CAD</a>
+      <a class="btn btn-ghost" href="https://voip.echoguard.ca">The knowledge library &rarr;</a>
+    </div>
+    <p class="fine" style="margin-top:12px">Not ready for a session? The guides are free, the answer keys are pay-what-you-can, and the build session is $499 CAD &mdash; resolution, or no charge. Full library: <a href="https://voip.echoguard.ca">voip.echoguard.ca</a>.</p>
+    <p class="fine">Rolling out with the beta &mdash; works on your system, or you don&rsquo;t pay.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Relay by <a href="https://echoguard.ca">EchoGuard Communications</a> &mdash; your phone system, covered.</span>
+    <span>Text <a href="tel:+13438434440" style="color:inherit;text-decoration:none;">343-843-4440</a></span> <span style="opacity:.55">&middot;</span> <span><a href="mailto:kaiel@echoguard.ca" style="color:inherit;text-decoration:none;">kaiel@echoguard.ca</a></span> <span style="opacity:.55">&middot;</span> <span>relay.echoguard.ca</span> <span style="opacity:.55">&middot;</span> <a href="/login.html" style="color:inherit;text-decoration:none;">Beta sign in</a>
+  </div>
+</footer>
+
+</body>
+</html>

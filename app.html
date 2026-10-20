@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Echo — Ask your phone system</title>
+<meta name="description" content="Echo — ask your phone system in plain words. See check-ins, calls, and problems in seconds.">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --panel: #121a26;
+    --panel-2: #0e141d;
+    --line: #223047;
+    --ink: #e8eef6;
+    --muted: #8b98ab;
+    --accent: #38bdf8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+  .brand span { color: var(--accent); }
+  .tag { color: var(--muted); font-size: 15px; }
+  .user { margin-left: auto; display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 14px; }
+  button { font: inherit; cursor: pointer; }
+  #logoutBtn {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+  #logoutBtn:hover { color: var(--ink); border-color: var(--muted); }
+  main { max-width: 1080px; margin: 0 auto; padding: 28px 24px 60px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+  .card h2 { margin: 0 0 12px; font-size: 19px; }
+  .card h3 { margin: 0 0 2px; font-size: 16px; }
+  .hint { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+  .askrow { display: flex; gap: 10px; }
+  #q {
+    flex: 1;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 15px;
+    font-family: inherit;
+  }
+  #q:focus { outline: none; border-color: var(--accent); }
+  #askBtn {
+    background: var(--accent);
+    color: #04121d;
+    border: none;
+    border-radius: 10px;
+    padding: 0 28px;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  #askBtn:disabled { opacity: 0.5; cursor: default; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--accent); }
+  .answer { font-size: 18px; line-height: 1.7; margin: 0; }
+  .src-line { margin: 10px 0 0; }
+  .chip { display: inline-block; font-size: 12px; font-weight: 600;
+          letter-spacing: .04em; text-transform: uppercase;
+          padding: 3px 9px; border-radius: 999px; }
+  .chip-records { color: var(--muted); border: 1px solid var(--line); }
+  .read-block { margin-top: 12px; padding: 12px 14px;
+                background: var(--panel-2); border: 1px solid var(--line);
+                border-left: 3px solid var(--accent); border-radius: 8px; }
+  .chip-read { color: var(--accent); border: 1px solid var(--accent);
+               margin-bottom: 6px; }
+  .read { margin: 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px; }
+  th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .sentence { font-size: 17px; margin: 0 0 18px; }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 130px; }
+  .bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .bar {
+    width: 100%;
+    max-width: 34px;
+    background: var(--accent);
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    opacity: 0.85;
+  }
+  .bar-wrap span { font-size: 10px; color: var(--muted); }
+  .mrow { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .mname { width: 120px; font-size: 14px; flex-shrink: 0; }
+  .mbar-wrap { flex: 1; background: var(--panel-2); border-radius: 6px; height: 14px; overflow: hidden; }
+  .mbar { height: 100%; background: var(--accent); border-radius: 6px; }
+  .mcount { width: 44px; text-align: right; font-size: 14px; color: var(--muted); flex-shrink: 0; }
+  ul.clean { list-style: none; margin: 0; padding: 0; }
+  ul.clean li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  ul.clean li:last-child { border-bottom: none; }
+  ul.clean .when { color: var(--muted); flex-shrink: 0; }
+  ul.clean .count { color: var(--muted); flex-shrink: 0; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot.connected { background: #34d399; }
+  .dot.quiet { background: #fbbf24; }
+  .dot.registered { background: #38bdf8; }
+  .dot.offline { background: #5b6b7f; }
+  .node { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .node:last-child { border-bottom: none; }
+  .nname { font-weight: 600; }
+  .nplat { color: var(--muted); }
+  .nmeta { color: var(--muted); font-size: 12px; }
+  .revoke { margin-left: auto; padding: 3px 10px; font-size: 12px; flex-shrink: 0; }
+  .primary { background: var(--accent); color: #04121d; border: none; border-radius: 10px; padding: 0 20px; font-weight: 700; font-size: 14px; white-space: nowrap; }
+  .primary:disabled { opacity: 0.5; cursor: default; }
+  .setupbox { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; word-break: break-all; line-height: 1.6; }
+  details summary { cursor: pointer; }
+  .note { color: var(--muted); font-size: 13px; text-align: center; margin: 26px 0 0; }
+
+  /* the correlation visual — the HEP picture (sipcapture): every
+     call a vertical ladder, both directions, color
+     coded by status, milliseconds between rungs */
+  .corr { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-top: 14px; }
+  .corr-head { padding: 9px 14px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); background: rgba(139, 152, 171, 0.05); }
+  .corr-head .mono { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .corr-rung { display: flex; gap: 12px; align-items: baseline; padding: 7px 14px; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .corr-rung:last-child { border-bottom: 0; }
+  .corr-dir { flex: 0 0 14px; text-align: center; font-weight: 800; }
+  .corr-time { flex: 0 0 60px; color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .corr-what { flex: 0 0 118px; font-weight: 700; }
+  .corr-detail { flex: 1; color: var(--muted); word-break: break-word; min-width: 0; }
+  .corr-delta { flex: 0 0 76px; text-align: right; color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .corr-req .corr-dir { color: var(--accent); }
+  .corr-ok { background: rgba(52, 211, 153, 0.06); }
+  .corr-ok .corr-dir { color: #34d399; }
+  .corr-bad { background: rgba(248, 113, 113, 0.08); }
+  .corr-bad .corr-dir { color: #f87171; }
+  .corr-mut .corr-dir { color: var(--muted); }
+
+  /* the correlation diagram — a sequence diagram: every
+     message an arrow between lifelines, colored by status,
+     milliseconds from call start down the left ruler */
+  .corr-svg { width: 100%; height: auto; display: block; background: rgba(139, 152, 171, 0.03); }
+  .corr-rail { stroke: #223047; stroke-width: 2; }
+  .corr-rail-label { fill: #8b98ab; font-size: 12.5px; font-weight: 700; }
+  .corr-arrow { stroke-width: 2.5; fill: none; }
+  .corr-arrow.corr-req { stroke: #38bdf8; }
+  .corr-arrow.corr-ok { stroke: #34d399; }
+  .corr-arrow.corr-bad { stroke: #f87171; }
+  .corr-arrow.corr-mut { stroke: #8b98ab; }
+  .corr-msg { font-size: 12px; font-weight: 700; }
+  .corr-msg.corr-req { fill: #38bdf8; }
+  .corr-msg.corr-ok { fill: #34d399; }
+  .corr-msg.corr-bad { fill: #f87171; }
+  .corr-msg.corr-mut { fill: #8b98ab; }
+  .corr-axis { fill: #8b98ab; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .corr-raw { border-top: 1px solid var(--line); }
+  .corr-raw summary { padding: 7px 14px; font-size: 12px; color: var(--muted); cursor: pointer; }
+
+  /* the voice lane — push to talk, answers speak back */
+  .voice-btn { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--muted); padding: 12px 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .voice-btn:hover { color: var(--ink); border-color: var(--accent); }
+  .voice-btn.listening { color: #f87171; border-color: #f87171; animation: pulse 1s infinite; }
+  .voice-btn.on { color: var(--accent); border-color: var(--accent); }
+
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+    .askrow { flex-direction: column; }
+    #askBtn { padding: 13px; }
+    header { flex-wrap: wrap; }
+    .user { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Echo<span>.</span></div>
+  <div class="tag">Ask your phone system</div>
+  <div class="user">
+    <span id="userChip">…</span>
+    <button id="logoutBtn" type="button">Sign out</button>
+  </div>
+</header>
+<main>
+  <section class="card">
+    <h2>Ask in plain words</h2>
+    <div class="askrow">
+      <input id="q" type="text" autocomplete="off"
+             placeholder="Try: any problems?  how many calls today?  who's talking?">
+      <button id="askBtn" type="button">Ask</button>
+      <button id="voice-btn" class="voice-btn" type="button" title="Talk your question" aria-label="Talk your question" hidden>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <button id="voice-out" class="voice-btn" type="button" title="Speak answers aloud" aria-label="Speak answers aloud" aria-pressed="false" hidden>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      </button>
+    </div>
+    <p id="voiceHint" class="hint" style="margin-top:8px" hidden></p>
+    <div class="chips">
+      <button class="chip" type="button" data-q="Any problems?">Any problems?</button>
+      <button class="chip" type="button" data-q="How many calls today?">Calls today</button>
+      <button class="chip" type="button" data-q="Who's talking?">Who's talking</button>
+      <button class="chip" type="button" data-q="Latest activity">Latest activity</button>
+      <button class="chip" type="button" data-q="How are the check-ins?">Check-ins</button>
+      <button class="chip" type="button" data-q="Phone company traffic">Phone company</button>
+    </div>
+    <p class="hint" style="margin-top:10px">Voice: push the mic and talk your question; push the speaker to have answers read aloud. Voice uses your browser&rsquo;s built-in speech service — audio stays between you and your browser, and answers still read only your own telemetry.</p>
+  </section>
+
+  <section class="card" id="answerCard" hidden>
+    <h2 id="answerQ"></h2>
+    <p class="answer" id="answerText" aria-live="polite"></p>
+    <div class="src-line" id="srcLine" hidden>
+      <span class="chip chip-records">From your system's records</span>
+    </div>
+    <div class="read-block" id="readBlock" hidden>
+      <span class="chip chip-read">Greg's read</span>
+      <p class="read" id="readText" aria-live="polite"></p>
+    </div>
+    <div id="corrBody"></div>
+    <table id="eventsTable" hidden>
+      <thead>
+        <tr><th>Time</th><th>What</th><th>Where</th></tr>
+      </thead>
+      <tbody id="eventsBody"></tbody>
+    </table>
+  </section>
+
+  <section class="card" id="nodesCard">
+    <h2>Phone systems</h2>
+    <p class="hint">Each connected phone system sends its call signals here — its check-ins, calls, and problems show up in the answers above.</p>
+    <div id="nodeList"><p class="muted">Loading…</p></div>
+    <button id="addNodeBtn" type="button" class="chip">+ Connect a phone system</button>
+    <div id="addNodeFlow" hidden style="margin-top:14px;">
+      <div class="askrow" style="max-width:460px;">
+        <input id="nodeName" type="text" maxlength="40"
+               placeholder="Name it (optional) — like &quot;office phone system&quot;">
+        <button id="genNodeBtn" type="button" class="primary">Generate the one-line setup</button>
+      </div>
+      <div id="setupArea" hidden style="margin-top:14px;">
+        <p class="hint" style="margin-bottom:8px;">On the phone system's own computer, paste this one line into the terminal (it asks for sudo):</p>
+        <div class="setupbox" id="setupString"></div>
+        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+          <button id="copySetupBtn" type="button" class="chip">Copy the line</button>
+          <button id="showFprintsBtn" type="button" class="chip">Show fingerprints</button>
+          <button id="hideFlowBtn" type="button" class="chip">Done</button>
+        </div>
+        <details id="whatHappens" style="margin-top:12px;">
+          <summary class="chip" style="display:inline-block;">What happens when you run it</summary>
+          <ul style="font-size:14px; color:var(--muted); margin:10px 0 0; padding-left:18px; line-height:1.7;">
+            <li>Installs a small helper on the phone system's computer</li>
+            <li>Copies the phone system's call signals — who called whom, who's ringing, what failed — <b>never the audio</b> — and sends them to Echo over an encrypted connection</li>
+            <li>The helper only talks to <b>echo.echoguard.ca</b>. It downloads nothing, opens no door inward, and runs as an unprivileged user</li>
+            <li>Every file it touches is backed up first. Remove it any time by pasting the same line with <code>--uninstall</code></li>
+            <li>Before running it, you can read the full installer source: <a href="/connector/connect.sh" target="_blank" rel="noopener">connect.sh</a> — it should match the fingerprints shown here</li>
+          </ul>
+        </details>
+        <div id="fprints" hidden style="margin-top:10px;">
+          <p class="hint">Fingerprints (SHA-256) — the installer checks these against everything it runs, before it changes anything:</p>
+          <pre id="fprintList" style="font-size:11px; background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:10px; overflow-x:auto; margin:0;"></pre>
+        </div>
+      </div>
+    </div>
+    <p class="hint" style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">
+      Where the signals come from: they ride <b>HEP</b> — the open capture standard from the
+      <a href="https://sipcapture.org/" target="_blank" rel="noopener" style="color:var(--accent);">sipcapture project</a>,
+      the same open plumbing behind <a href="https://hepic.tel" target="_blank" rel="noopener" style="color:var(--accent);">hepic</a>
+      and HOMER. We're built on their work, not hiding it. Prefer to run everything yourself, with nothing from us?
+      <a href="https://hepic.tel/deploy/" target="_blank" rel="noopener" style="color:var(--accent);">Deploy hepic on your own</a> —
+      or go 100% open source with
+      <a href="https://github.com/sipcapture/homer/wiki" target="_blank" rel="noopener" style="color:var(--accent);">HOMER</a>
+      and <a href="https://github.com/sipcapture/awesome-hep" target="_blank" rel="noopener" style="color:var(--accent);">the full HEP ecosystem list</a>.
+    </p>
+  </section>
+
+  <section class="card" id="pcapCard">
+    <h2>Decode a capture</h2>
+    <p class="hint">Upload a .pcap or .pcapng from your phone system — up to 20 MB. Echo reads the call signals (who called whom, what failed, whether audio flowed both ways) and says it in plain words, then deletes the file. Only the signals are read; the audio is never played or kept.</p>
+    <div class="askrow" style="max-width:460px;">
+      <input id="pcapFile" type="file" accept=".pcap,.pcapng"
+             style="flex:1; min-width:0; font-size:14px; color:var(--muted);">
+      <button id="pcapBtn" type="button" class="primary">Decode it</button>
+    </div>
+    <p class="hint" id="pcapStatus" style="margin-top:10px" hidden></p>
+    <div id="pcapResult" hidden style="margin-top:4px;">
+      <p class="answer" id="pcapReadout" aria-live="polite"></p>
+      <table id="pcapTable" hidden>
+        <thead><tr><th>Check</th><th>What it found</th></tr></thead>
+        <tbody id="pcapBody"></tbody>
+      </table>
+      <div id="pcapRfc" hidden style="margin-top:14px;">
+        <button id="pcapRfcBtn" type="button" class="chip"></button>
+        <div id="pcapRfcBody" hidden style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="sentence" id="sentence"></p>
+
+  <div class="grid">
+    <section class="card">
+      <h3>Activity</h3>
+      <p class="hint">The last hour, in 5-minute steps</p>
+      <div class="bars" id="activityBars"></div>
+    </section>
+    <section class="card">
+      <h3>What's happening</h3>
+      <p class="hint">Last hour</p>
+      <div id="methodBars"></div>
+    </section>
+    <section class="card">
+      <h3>Who's talking</h3>
+      <p class="hint">Busiest talkers</p>
+      <ul class="clean" id="talkerList"></ul>
+    </section>
+    <section class="card">
+      <h3>Latest</h3>
+      <p class="hint">Most recent events</p>
+      <ul class="clean" id="recentList"></ul>
+    </section>
+  </div>
+
+  <p class="note">
+    Echo reads your phone system's recent activity. Nothing is stored or shared.
+    <button id="refreshBtn" type="button" class="chip" style="margin-left:8px;">Refresh</button>
+  </p>
+</main>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) {
+    var d = document.createElement("div");
+    d.textContent = String(s == null ? "" : s);
+    return d.innerHTML;
+  };
+
+  function requireLogin() {
+    return fetch("/api/whoami").then(function (r) {
+      if (!r.ok) {
+        location.href = "/login.html?next=" + encodeURIComponent(location.pathname);
+        return false;
+      }
+      return r.json();
+    }).then(function (d) {
+      if (d) { $("userChip").textContent = d.display || d.user; }
+      return !!d;
+    }).catch(function () {
+      location.href = "/login.html?next=" + encodeURIComponent(location.pathname);
+      return false;
+    });
+  }
+
+  function renderEvents(events) {
+    var table = $("eventsTable");
+    if (!events || !events.length) { table.hidden = true; return; }
+    table.hidden = false;
+    $("eventsBody").innerHTML = events.map(function (e) {
+      return "<tr><td>" + esc(e.time) + "</td><td>" + esc(e.what) + "</td><td>" + esc(e.detail) + "</td></tr>";
+    }).join("");
+  }
+
+  // The correlation visual — the HEP picture (sipcapture), drawn
+  // as a sequence diagram: every message an arrow between
+  // lifelines, colored by status, with the milliseconds
+  // from call start down the left ruler. The raw ladder
+  // stays one click away for text mode.
+  var svgSeq = 0;
+  function rungClass(what) {
+    var w = String(what || "").toLowerCase();
+    if (w.indexOf("reply") !== 0) { return "corr-req"; }
+    if (/\b2\d\d\b/.test(w)) { return "corr-ok"; }
+    if (/\b[45]\d\d\b/.test(w)) { return "corr-bad"; }
+    return "corr-mut";
+  }
+  function dialogSvg(dlg) {
+    var rungs = dlg.ladder;
+    svgSeq += 1;
+    var uid = "h" + svgSeq;
+    // lifelines: the endpoints of the dialog, in the
+    // order they first speak
+    var rails = [];
+    rungs.forEach(function (r) {
+      var m = /^from (.*?) to (.*?)$/.exec(r.detail || "");
+      if (m) {
+        if (rails.indexOf(m[1]) < 0) { rails.push(m[1]); }
+        if (rails.indexOf(m[2]) < 0) { rails.push(m[2]); }
+      }
+    });
+    if (rails.length < 2) { rails = ["this side", "the other side"]; }
+    var rowH = 46, top = 58, left = 148, right = 118, w = 760;
+    var h = top + rungs.length * rowH + 16;
+    var xs = rails.map(function (_, i) {
+      if (rails.length === 1) { return w / 2; }
+      return left + (w - left - right) * i / (rails.length - 1);
+    });
+    var p = [];
+    p.push('<svg viewBox="0 0 ' + w + ' ' + h + '" class="corr-svg" role="img" aria-label="Call correlation diagram, ' + esc(dlg.call_id) + '">');
+    p.push('<defs>' +
+      '<marker id="a-req-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#38bdf8"/></marker>' +
+      '<marker id="a-ok-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#34d399"/></marker>' +
+      '<marker id="a-bad-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#f87171"/></marker>' +
+      '<marker id="a-mut-' + uid + '" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b98ab"/></marker>' +
+      '</defs>');
+    rails.forEach(function (name, i) {
+      p.push('<line x1="' + xs[i] + '" y1="' + (top - 16) + '" x2="' + xs[i] + '" y2="' + (h - 10) + '" class="corr-rail"/>');
+      p.push('<text x="' + xs[i] + '" y="' + (top - 26) + '" class="corr-rail-label" text-anchor="middle">' + esc(name) + '</text>');
+    });
+    rungs.forEach(function (r, i) {
+      var y = top + i * rowH + rowH / 2;
+      var cls = rungClass(r.what);
+      var m = /^from (.*?) to (.*?)$/.exec(r.detail || "");
+      var from = m ? rails.indexOf(m[1]) : 0;
+      var to = m ? rails.indexOf(m[2]) : (rails.length > 1 ? 1 : 0);
+      if (from < 0) { from = 0; }
+      if (to < 0) { to = 1 % rails.length; }
+      var x1 = xs[from];
+      var x2 = xs[to];
+      var mark = 'url(#a-' + cls.slice(5) + '-' + uid + ')';
+      if (from === to) {
+        p.push('<path d="M ' + x1 + ' ' + y + ' c 16 -12 30 -12 30 0 c 0 12 -14 12 -30 0" class="corr-arrow ' + cls + '" marker-end="' + mark + '"/>');
+      } else {
+        p.push('<line x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '" class="corr-arrow ' + cls + '" marker-end="' + mark + '"/>');
+      }
+      p.push('<text x="' + ((x1 + x2) / 2) + '" y="' + (y - 7) + '" class="corr-msg ' + cls + '" text-anchor="middle">' + esc(r.what) + '</text>');
+      p.push('<text x="8" y="' + (y + 4) + '" class="corr-axis">' + esc(r.time) + '  +' + (r.delta_ms || 0).toLocaleString() + ' ms</text>');
+    });
+    p.push('</svg>');
+    return p.join("");
+  }
+  function renderDialogs(dialogs, mountId) {
+    var box = document.getElementById(mountId);
+    if (!box) { return; }
+    if (!dialogs || !dialogs.length) { box.innerHTML = ""; return; }
+    box.innerHTML = dialogs.map(function (dlg) {
+      if (dlg.error || !dlg.ladder || !dlg.ladder.length) { return ""; }
+      var rows = dlg.ladder.map(function (r) {
+        return '<div class="corr-rung ' + rungClass(r.what) + '">' +
+          '<span class="corr-time">' + esc(r.time) + '</span>' +
+          '<span class="corr-what">' + esc(r.what) + '</span>' +
+          '<span class="corr-detail">' + esc(r.detail) + '</span>' +
+          '<span class="corr-delta">+' + (r.delta_ms || 0).toLocaleString() + ' ms</span></div>';
+      }).join("");
+      return '<div class="corr"><div class="corr-head">Call correlation' +
+        ' <span class="mono">' + esc(dlg.call_id) + '</span> · ' +
+        dlg.messages + ' messages over ' + (dlg.window_ms / 1000).toFixed(1) +
+        's</div>' + dialogSvg(dlg) +
+        '<details class="corr-raw"><summary>the raw ladder</summary>' + rows + '</details></div>';
+    }).join("");
+  }
+
+  // The voice lane — the TNG-computer interaction: push
+  // to talk, the answer speaks back. Client-side Web
+  // Speech API; audio stays between you and your
+  // browser's speech service. Spoken answers also make
+  // the console usable without looking at a screen.
+  var voiceOut = false;
+  var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recog = null;
+  var voiceBtn = document.getElementById('voice-btn');
+  var voiceOutBtn = document.getElementById('voice-out');
+  var voiceHint = document.getElementById('voiceHint');
+  function voiceStatus(msg) {
+    if (!voiceHint) { return; }
+    voiceHint.textContent = msg || "";
+    voiceHint.hidden = !msg;
+  }
+  if (SpeechRec && voiceBtn) {
+    recog = new SpeechRec();
+    recog.lang = 'en-US';
+    recog.interimResults = false;
+    recog.maxAlternatives = 1;
+    voiceBtn.hidden = false;
+    recog.onresult = function (e) {
+      var t = e.results[0][0].transcript;
+      $("q").value = t;
+      voiceStatus("");
+      ask(t);
+    };
+    recog.onend = function () { voiceBtn.classList.remove('listening'); };
+    recog.onerror = function (ev) {
+      voiceBtn.classList.remove('listening');
+      var why = "Voice input hit a snag — type your question below instead.";
+      if (ev && ev.error === 'not-allowed') {
+        why = "Microphone access is blocked in the browser — allow it, or just type your question.";
+      } else if (ev && ev.error === 'no-speech') {
+        why = "Didn't catch that — push the mic and try again.";
+      } else if (ev && ev.error === 'network') {
+        why = "Voice input needs your browser's speech service — typing works just as well.";
+      }
+      voiceStatus(why);
+    };
+    voiceBtn.addEventListener('click', function () {
+      if (!recog) { return; }
+      voiceStatus("Listening…");
+      voiceBtn.classList.add('listening');
+      try { recog.start(); } catch (err) {
+        voiceBtn.classList.remove('listening');
+        voiceStatus("Voice input is busy — try again in a second.");
+      }
+    });
+  }
+  if ('speechSynthesis' in window && voiceOutBtn) {
+    voiceOutBtn.hidden = false;
+    // Prime the voice list — some browsers fill it late.
+    speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = function () { speechSynthesis.getVoices(); };
+    // Warm the speech service on the first gesture. Some browsers
+    // silently drop utterances spoken before any user interaction —
+    // and the first answer can arrive well after the last click.
+    var speechWarmed = false;
+    function warmSpeech() {
+      if (speechWarmed) { return; }
+      speechWarmed = true;
+      try {
+        var silent = new SpeechSynthesisUtterance(" ");
+        silent.volume = 0;
+        speechSynthesis.speak(silent);
+      } catch (err) { /* best effort */ }
+    }
+    window.addEventListener('pointerdown', warmSpeech, { once: true });
+    window.addEventListener('keydown', warmSpeech, { once: true });
+    voiceOutBtn.addEventListener('click', function () {
+      voiceOut = !voiceOut;
+      voiceOutBtn.classList.toggle('on', voiceOut);
+      voiceOutBtn.setAttribute('aria-pressed', voiceOut ? 'true' : 'false');
+      if (!voiceOut) { speechSynthesis.cancel(); voiceStatus(""); return; }
+      // Confirm the toggle out loud, inside the click gesture.
+      try {
+        speechSynthesis.cancel();
+        speechSynthesis.speak(new SpeechSynthesisUtterance("Voice answers on."));
+        if (speechSynthesis.getVoices().length === 0) {
+          voiceStatus("Voice answers are on — this browser hasn't loaded speech voices yet; if answers stay silent, check the browser's speech settings.");
+        }
+      } catch (err) { /* best effort */ }
+    });
+  }
+  function speak(text) {
+    if (!voiceOut || !text || !('speechSynthesis' in window)) { return; }
+    speechSynthesis.cancel();
+    // Split into sentences: some browsers cut one long utterance
+    // short, and queued chunks play in order.
+    var chunks = String(text).match(/[^.!?]+[.!?]*/g) || [String(text)];
+    chunks.forEach(function (c) {
+      var line = c.trim();
+      if (line) { speechSynthesis.speak(new SpeechSynthesisUtterance(line)); }
+    });
+  }
+
+  function ask(q) {
+    var question = (q || $("q").value || "").trim();
+    if (!question) { $("q").focus(); return; }
+    $("q").value = question;
+    var btn = $("askBtn");
+    btn.disabled = true;
+    $("answerCard").hidden = false;
+    $("answerQ").textContent = question;
+    $("answerText").textContent = "Thinking… (a few seconds — the first answer can be slow)";
+    $("srcLine").hidden = true;
+    $("readBlock").hidden = true;
+    $("eventsTable").hidden = true;
+    fetch("/api/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: question })
+    }).then(function (r) {
+      return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+    }).then(function (res) {
+      if (!res.ok) {
+        $("answerText").textContent = res.d.error || "Sorry, that didn't work. Try again.";
+        return;
+      }
+      $("answerText").textContent = res.d.answer;
+      $("srcLine").hidden = !res.d.records;
+      if (res.d.read) {
+        $("readText").textContent = res.d.read;
+        $("readBlock").hidden = false;
+      } else {
+        $("readBlock").hidden = true;
+      }
+      renderEvents(res.d.events || []);
+      renderDialogs(res.d.dialogs || [], "corrBody");
+      speak(res.d.answer + (res.d.read ? " Greg's read: " + res.d.read : ""));
+    }).catch(function () {
+      $("answerText").textContent = "Something went wrong asking. Please try again.";
+    }).finally(function () {
+      btn.disabled = false;
+    });
+  }
+
+  var lastPcapFacts = null;
+
+  function decodePcap() {
+    var file = $("pcapFile").files[0];
+    if (!file) { $("pcapFile").focus(); return; }
+    if (file.size > 20 * 1024 * 1024) {
+      $("pcapStatus").hidden = false;
+      $("pcapStatus").textContent = "That capture is over 20 MB — export a shorter window and try again.";
+      return;
+    }
+    var btn = $("pcapBtn");
+    btn.disabled = true;
+    $("pcapResult").hidden = true;
+    $("pcapRfc").hidden = true;
+    lastPcapFacts = null;
+    $("pcapStatus").hidden = false;
+    $("pcapStatus").textContent = "Reading the capture — a big one can take a minute…";
+    var reader = new FileReader();
+    reader.onload = function () {
+      var b64 = String(reader.result || "").split(",")[1] || "";
+      fetch("/api/pcap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: file.name, data: b64 })
+      }).then(function (r) {
+        return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+      }).then(function (res) {
+        $("pcapResult").hidden = false;
+        if (!res.ok) {
+          $("pcapReadout").textContent = res.d.error || "Echo couldn't read that capture.";
+          $("pcapTable").hidden = true;
+          $("pcapRfc").hidden = true;
+          return;
+        }
+        $("pcapReadout").textContent = (res.d.readout || []).join(" ");
+        lastPcapFacts = res.d.facts || {};
+        renderPcapFacts(lastPcapFacts);
+        renderPcapRfc(lastPcapFacts.misaligned);
+        speak((res.d.readout || []).join(" "));
+      }).catch(function () {
+        $("pcapResult").hidden = false;
+        $("pcapReadout").textContent = "Something went wrong reading the capture. Please try again.";
+        $("pcapTable").hidden = true;
+        $("pcapRfc").hidden = true;
+      }).finally(function () {
+        btn.disabled = false;
+        $("pcapStatus").hidden = true;
+      });
+    };
+    reader.onerror = function () {
+      $("pcapStatus").hidden = false;
+      $("pcapStatus").textContent = "Couldn't read that file in the browser — export the capture again and try.";
+      btn.disabled = false;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function renderPcapFacts(f) {
+    var rows = [];
+    if (f.packets != null) { rows.push(["Packets", f.packets.toLocaleString()]); }
+    if (f.seconds) { rows.push(["Span", f.seconds + " seconds"]); }
+    if (f.sip_messages != null) { rows.push(["Call signals", f.sip_messages.toLocaleString()]); }
+    if (f.calls != null) { rows.push(["Call setups", f.calls.toLocaleString()]); }
+    if (f.connected != null) { rows.push(["Connected", f.connected.toLocaleString()]); }
+    if (f.failed) {
+      rows.push(["Refused", Object.keys(f.codes || {}).map(function (c) {
+        return c + " × " + f.codes[c];
+      }).join(", ")]);
+    }
+    if (f.codecs && f.codecs.length) { rows.push(["Codecs", f.codecs.join(", ")]); }
+    if (f.one_way && f.one_way.length) {
+      rows.push(["One-way audio", f.one_way.map(function (o) {
+        return o.a + " ↔ " + o.b;
+      }).join("; ")]);
+    }
+    if (f.talkers && f.talkers.length) {
+      rows.push(["Busiest source", f.talkers[0].ip + " (" + f.talkers[0].requests.toLocaleString() + ")"]);
+    }
+    var table = $("pcapTable");
+    if (!rows.length) { table.hidden = true; return; }
+    $("pcapBody").innerHTML = rows.map(function (r) {
+      return "<tr><td>" + esc(r[0]) + "</td><td>" + esc(String(r[1])) + "</td></tr>";
+    }).join("");
+    table.hidden = false;
+  }
+
+  function renderPcapRfc(mis) {
+    var wrap = $("pcapRfc");
+    if (!mis || !mis.length) {
+      wrap.hidden = true;
+      $("pcapRfcBody").hidden = true;
+      return;
+    }
+    wrap.hidden = false;
+    $("pcapRfcBody").hidden = true;
+    $("pcapRfcBtn").textContent = "Compare against the RFC (" +
+      mis.length + " call" + (mis.length === 1 ? "" : "s") +
+      " out of order)";
+  }
+
+  function togglePcapRfc() {
+    var body = $("pcapRfcBody");
+    if (!body.hidden) {
+      body.hidden = true;
+      return;
+    }
+    var mis = (lastPcapFacts && lastPcapFacts.misaligned) || [];
+    body.innerHTML = mis.map(function (m) {
+      return "<div class='read-block' style='margin-top:10px;'>" +
+        "<span class='chip chip-read'>" + esc(m.call_id) + "</span>" +
+        "<p class='read' style='font-size:14px;margin-top:6px;'>" + esc(m.issue) + "</p>" +
+        "<table style='margin-top:10px;'><thead><tr><th>What the RFC says</th><th>What the capture shows</th></tr></thead>" +
+        "<tbody><tr><td>" + esc(m.expected) + "</td><td>" + esc(m.observed) + "</td></tr></tbody></table>" +
+        "</div>";
+    }).join("");
+    body.hidden = false;
+  }
+
+  function renderActivity(buckets) {
+    var el = $("activityBars");
+    if (!buckets || !buckets.length) {
+      el.innerHTML = "<p class='muted'>Quiet — no activity in the last hour.</p>";
+      return;
+    }
+    var max = Math.max.apply(null, buckets.map(function (b) { return b.n; }).concat([1]));
+    el.innerHTML = buckets.map(function (b) {
+      var h = Math.max(6, Math.round((b.n / max) * 100));
+      return "<div class='bar-wrap' title='" + esc(b.t) + " — " + b.n + " events'>" +
+             "<div class='bar' style='height:" + h + "%'></div><span>" + esc(b.t) + "</span></div>";
+    }).join("");
+  }
+
+  function renderMethods(methods) {
+    var el = $("methodBars");
+    if (!methods || !methods.length) {
+      el.innerHTML = "<p class='muted'>Quiet hour.</p>";
+      return;
+    }
+    var max = Math.max.apply(null, methods.map(function (m) { return m.count; }).concat([1]));
+    el.innerHTML = methods.map(function (m) {
+      var w = Math.max(4, Math.round((m.count / max) * 100));
+      return "<div class='mrow'><span class='mname'>" + esc(m.method) + "</span>" +
+             "<div class='mbar-wrap'><div class='mbar' style='width:" + w + "%'></div></div>" +
+             "<span class='mcount'>" + m.count + "</span></div>";
+    }).join("");
+  }
+
+  function renderTalkers(talkers) {
+    var el = $("talkerList");
+    if (!talkers || !talkers.length) {
+      el.innerHTML = "<li class='muted'>No talkers yet.</li>";
+      return;
+    }
+    el.innerHTML = talkers.map(function (t) {
+      return "<li><span>" + esc(t.endpoint) + "</span><span class='count'>" + t.count + " events</span></li>";
+    }).join("");
+  }
+
+  function renderRecent(recent) {
+    var el = $("recentList");
+    if (!recent || !recent.length) {
+      el.innerHTML = "<li class='muted'>Nothing yet.</li>";
+      return;
+    }
+    el.innerHTML = recent.map(function (e) {
+      return "<li><span><span class='when'>" + esc(e.time) + "</span> &nbsp;" + esc(e.what) +
+             " <span class='when'>· " + esc(e.detail) + "</span></span></li>";
+    }).join("");
+  }
+
+  function loadDashboards() {
+    fetch("/api/dashboards").then(function (r) {
+      if (!r.ok) { throw new Error("not ok"); }
+      return r.json();
+    }).then(function (d) {
+      $("sentence").textContent = d.sentence || "";
+      renderActivity(d.activity || []);
+      renderMethods(d.methods || []);
+      renderTalkers(d.talkers || []);
+      renderRecent(d.recent || []);
+    }).catch(function () { /* keep last good state */ });
+  }
+
+  // ---------- phone systems (connected nodes) ----------
+
+  function relTime(ts) {
+    if (!ts) return "never";
+    var s = Math.max(0, Math.floor(Date.now() / 1000 - ts));
+    if (s < 60) return s + "s ago";
+    if (s < 3600) return Math.floor(s / 60) + "m ago";
+    if (s < 86400) return Math.floor(s / 3600) + "h ago";
+    return Math.floor(s / 86400) + "d ago";
+  }
+
+  function statusText(st) {
+    if (st === "connected") return "Connected — sending signals now";
+    if (st === "quiet") return "Connected — quiet right now";
+    if (st === "registered") return "Set up — waiting for its first signals";
+    return "Not seen recently";
+  }
+
+  function renderNodes(nodes) {
+    var el = $("nodeList");
+    if (!nodes || !nodes.length) {
+      el.innerHTML = "<p class='muted'>No phone systems connected yet. Connect one below and its check-ins, calls, and problems will show up in the answers above.</p>";
+      return;
+    }
+    el.innerHTML = nodes.map(function (n) {
+      return "<div class='node'>" +
+        "<span class='dot " + esc(n.status) + "'></span>" +
+        "<span><span class='nname'>" + esc(n.name) + "</span> " +
+        "<span class='nplat'>" + esc(n.platform) + "</span><br>" +
+        "<span class='nmeta'>" + esc(statusText(n.status)) +
+        (n.events ? " · " + n.events + " signals" : "") +
+        (n.ip ? " · " + esc(n.ip) : "") +
+        " · last signal " + relTime(n.last_hep) + "</span></span>" +
+        "<button class='chip revoke' type='button' data-node='" + n.node_id + "' data-name='" + esc(n.name) + "'>Remove</button>" +
+        "</div>";
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".revoke"), function (btn) {
+      btn.addEventListener("click", function () {
+        if (!confirm("Remove " + btn.getAttribute("data-name") + "? The helper keeps running on the phone system's computer until you remove it there (paste the setup line with --uninstall).")) return;
+        fetch("/api/nodes/" + btn.getAttribute("data-node") + "/revoke", { method: "POST" })
+          .finally(loadNodes);
+      });
+    });
+  }
+
+  function loadNodes() {
+    fetch("/api/nodes").then(function (r) {
+      return r.ok ? r.json() : null;
+    }).then(function (d) {
+      if (d) { renderNodes(d.nodes || []); }
+    }).catch(function () {});
+  }
+
+  $("addNodeBtn").addEventListener("click", function () {
+    $("addNodeFlow").hidden = false;
+    $("addNodeBtn").hidden = true;
+    $("nodeName").focus();
+  });
+
+  $("hideFlowBtn").addEventListener("click", function () {
+    $("addNodeFlow").hidden = true;
+    $("setupArea").hidden = true;
+    $("addNodeBtn").hidden = false;
+    loadNodes();
+  });
+
+  $("genNodeBtn").addEventListener("click", function () {
+    var btn = $("genNodeBtn");
+    btn.disabled = true;
+    fetch("/api/nodes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: $("nodeName").value.trim(), platform: "" })
+    }).then(function (r) {
+      return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+    }).then(function (res) {
+      if (!res.ok) {
+        alert(res.d.error || "Could not generate the setup string. Try again.");
+        return;
+      }
+      $("setupArea").hidden = false;
+      $("setupString").textContent = res.d.setup_string;
+      fetch("/connector/manifest.json").then(function (r) {
+        return r.ok ? r.json() : null;
+      }).then(function (m) {
+        if (!m) { return; }
+        var lines = ["connect.sh      " + m.files["connect.sh"],
+                     "connector.py    " + m.files["connector.py"]];
+        Object.keys(m.files.examples || {}).forEach(function (k) {
+          lines.push(k + " example  " + m.files.examples[k]);
+        });
+        $("fprintList").textContent = lines.join("\n");
+      }).catch(function () {});
+    }).finally(function () {
+      btn.disabled = false;
+    });
+  });
+
+  $("copySetupBtn").addEventListener("click", function () {
+    var text = $("setupString").textContent;
+    var done = function () {
+      $("copySetupBtn").textContent = "Copied";
+      setTimeout(function () { $("copySetupBtn").textContent = "Copy the line"; }, 1500);
+    };
+    var fallback = function () {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { prompt("Copy this line:", text); }
+      document.body.removeChild(ta);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else {
+      fallback();
+    }
+  });
+
+  $("showFprintsBtn").addEventListener("click", function () {
+    $("fprints").hidden = !$("fprints").hidden;
+  });
+
+  $("askBtn").addEventListener("click", function () { ask(); });
+  $("pcapBtn").addEventListener("click", function () { decodePcap(); });
+  $("pcapRfcBtn").addEventListener("click", function () { togglePcapRfc(); });
+  $("q").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { ask(); }
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".chip[data-q]"), function (chip) {
+    chip.addEventListener("click", function () { ask(chip.getAttribute("data-q")); });
+  });
+  $("refreshBtn").addEventListener("click", loadDashboards);
+  $("logoutBtn").addEventListener("click", function () {
+    fetch("/api/logout", { method: "POST" }).finally(function () {
+      location.href = "/login.html";
+    });
+  });
+
+  requireLogin().then(function (ok) {
+    if (ok) {
+      loadDashboards();
+      loadNodes();
+      setInterval(loadDashboards, 60000);
+      setInterval(loadNodes, 30000);
+    }
+  });
+})();
+</script>
+</body>
+</html>
