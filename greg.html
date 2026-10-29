@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Greg &mdash; The engineer on your box | EchoGuard.ca</title>
-<meta name="description" content="A telecom engineer costs $90k&ndash;$120k a year. Greg is $999/mo &mdash; a tenth of the price, answers in seconds, reads your actual phone-system data, and comes with 20+ years of telecom muscle memory baked in.">
+<link rel="canonical" href="https://greg.echoguard.ca/greg.html">
+<meta name="description" content="A telecom engineer costs $90k&ndash;$120k a year. Greg is $299/mo &mdash; a fraction of the price, answers in seconds, reads your actual phone-system data, and comes with 20+ years of telecom muscle memory baked in.">
 <style>
   :root {
     --bg: #0a0e14;
@@ -82,6 +83,9 @@
 
   /* grids */
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  /* the ladder is four rungs: 2x2 on desktop, never a 3 + 1 orphan row */
+  #pricing .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 720px) { #pricing .grid { grid-template-columns: 1fr; } }
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px;
   }
@@ -156,18 +160,18 @@
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="index.html">Greg<span>.</span></a>
+    <a class="brand" href="https://greg.echoguard.ca/">Greg<span>.</span></a>
     <div class="links">
-      <a href="index.html#interface">In action</a>
-      <a href="index.html#examples">Examples</a>
-      <a href="index.html#how">How it works</a>
-      <a href="index.html#platforms">Platforms</a>
-      <a href="greg.html">Meet Greg</a>
+      <a href="https://greg.echoguard.ca/#interface">In action</a>
+      <a href="https://greg.echoguard.ca/#examples">Examples</a>
+      <a href="https://greg.echoguard.ca/#how">How it works</a>
+      <a href="https://greg.echoguard.ca/#platforms">Platforms</a>
+      <a href="https://greg.echoguard.ca/greg.html">Meet Greg</a>
       <a href="https://echo.echoguard.ca/">Echo</a>
       <a href="https://forge.echoguard.ca/">Forge</a>
       <a href="https://relay.echoguard.ca/">Relay</a>
       <a href="https://voip.echoguard.ca/order.html">Pricing</a>
-      <a href="login.html">Log in</a>
+      <a href="https://greg.echoguard.ca/login.html">Log in</a>
     </div>
   </div>
 </nav>
@@ -177,13 +181,13 @@
     <div class="wave" aria-hidden="true">
       <i style="height:40%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:85%"></i><i style="height:45%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:80%"></i><i style="height:35%"></i><i style="height:75%"></i><i style="height:50%"></i><i style="height:90%"></i><i style="height:40%"></i>
     </div>
-    <img src="headshot.jpeg" alt="Greg Merriweather-El &mdash; the engineer you don&rsquo;t have to hire" width="120" height="120" style="border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 44px rgba(56,189,248,.35);margin-bottom:20px;object-fit:cover">
+    <img src="headshot.jpeg" alt="Greg Merriweather-El &mdash; the engineer you always wanted, built-in" width="120" height="120" style="border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 44px rgba(56,189,248,.35);margin-bottom:20px;object-fit:cover">
     <p class="eyebrow">From EchoGuard.ca</p>
-    <h1>Meet Greg &mdash; the engineer you don&rsquo;t have to hire.</h1>
-    <p class="sub">A telecom engineer costs $90k&ndash;$120k a year. Greg is $999/mo &mdash; a tenth of the price, deployed on your box, answers in seconds, reads your actual phone-system data instead of guessing, and comes with 20+ years of telecom muscle memory baked in.</p>
+    <h1>Meet Greg &mdash; the engineer you always wanted, built-in.</h1>
+    <p class="sub">A telecom engineer costs $90k&ndash;$120k a year. Greg is $299/mo &mdash; a fraction of the price, deployed on your box, answers in seconds, reads your actual phone-system data instead of guessing, and comes with 20+ years of telecom muscle memory baked in.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Hire%20Greg">Hire Greg</a>
-      <a class="btn btn-ghost" href="index.html#interface">See how he answers</a>
+      <a class="btn btn-ghost" href="https://greg.echoguard.ca/#interface">See how he answers</a>
     </div>
     <div class="chips" style="margin-top:34px">
       <span class="chip">On your box</span>
@@ -208,7 +212,7 @@
       </div>
       <div class="card">
         <h3>Greg fixes it &mdash; on your box</h3>
-        <p>The engineer deployed to your server, VPS, or hardware. Greg sits in your team channel and on the call, 24/7, and jumps in with answers in about 3 seconds. From $750/mo. Escalations stay human.</p>
+        <p>The engineer deployed to your server, VPS, or hardware. Greg sits in your team channel and on the call, 24/7, and jumps in with answers in about 3 seconds. From $299/mo. Escalations stay human.</p>
         <p style="margin-top:14px"><a href="mailto:sales@echoguard.ca?subject=Hire%20Greg">Hire Greg &rarr;</a></p>
       </div>
       <div class="card">
@@ -225,7 +229,7 @@
   <div class="wrap">
     <div class="center">
       <h2>Why Greg</h2>
-      <p class="lede">Gregory &mdash; from the Greek for <em>watchful</em>. Same work as an engineer. A tenth of the price. No salary, no benefits, no 2&nbsp;AM wake-up.</p>
+      <p class="lede">Gregory &mdash; from the Greek for <em>watchful</em>. Same work as an engineer. A fraction of the price. No salary, no benefits, no 2&nbsp;AM wake-up.</p>
     </div>
     <div class="grid">
       <div class="card">
@@ -238,7 +242,7 @@
       </div>
       <div class="card">
         <h3>20+ years baked in</h3>
-        <p>The questions he knows how to answer, the checklists for known problems, the &ldquo;what do I check first&rdquo; rules of thumb &mdash; 20+ years of telecom muscle memory, built in. The engineer you wish you could hire, at a tenth of the price.</p>
+        <p>The questions he knows how to answer, the checklists for known problems, the &ldquo;what do I check first&rdquo; rules of thumb &mdash; 20+ years of telecom muscle memory, built in. The engineer you wish you could hire, at a fraction of the price.</p>
       </div>
       <div class="card">
         <h3>Works through an outage</h3>
@@ -296,7 +300,10 @@
       </div>
       <div class="card">
         <h3>Yahoo &mdash; Telecom Engineer, 2010&ndash;2013</h3>
-        <p class="feature">Built and ran an open-source voice platform at global scale. First assignment: the new Amman, Jordan sales office &mdash; no phone system existed; flew in, racked Cisco 2811 gateways with E1 circuits, built two Asterisk servers, provisioned desk phones and conference-room phones, and the site joined 40+ Asterisk sites across APAC, EMEA, and the Americas. Steered the full HQ changeover from a legacy Nortel (Option 11/81) system to Cisco gateways and Asterisk &mdash; T1 migration, the legacy messaging platform moved to Asterisk voicemail, phased building-by-building weekend rollout. On-call across <strong>70+ locations / 140 Asterisk servers</strong>: production outage response, hardware failures, site restorations, and failover between sites. Made BLF (Busy Lamp Field) work on Asterisk 1.4.x where Digium and the forums said it was impossible. Owned company-wide call-detail (CDR), toll-fraud detection, and trunk-utilization tooling &mdash; SQL reports automated and emailed to the team.</p>
+        <p class="feature">They flew him to Amman, Jordan to open a new sales office. No phone system existed. No instructions either. He built one from nothing, and it joined <strong>40+ sites</strong> across three continents. That is the working style: send him somewhere empty and he comes back with a working phone system.</p>
+        <p class="feature">Then he moved the whole company off a legacy Nortel platform onto open-source voice, building by building and weekend by weekend, without ever taking the phones down.</p>
+        <p class="feature">He carried the on-call pager across <strong>70+ locations and 140 servers</strong> &mdash; the 2&nbsp;AM routing failures, the failed hardware, the site restorations. He has already been awake for your worst night.</p>
+        <p class="feature">And the one he is proudest of: he made BLF work on Asterisk 1.4.x, back when the vendor and the forums both said it was impossible. He read the source until it worked. When someone tells you your phone system cannot do something, that is the voice you want on the call.</p>
       </div>
       <div class="card">
         <h3>Lightyear &mdash; 2007&ndash;2009</h3>
@@ -328,7 +335,7 @@
   <div class="wrap">
     <div class="center">
       <h2>The ladder</h2>
-      <p class="lede">From a free recipe to a fully built agent. Every rung is my time &mdash; and every rung works on your system, or you don&rsquo;t pay.</p>
+      <p class="lede">From a free recipe to a seat on your team. Nothing here is five figures &mdash; every rung is my time, and every rung works on your system, or you don&rsquo;t pay.</p>
     </div>
     <div class="grid">
       <div class="card">
@@ -339,35 +346,28 @@
         <p style="margin-top:10px"><a href="https://voip.echoguard.ca/individuals.html#playbooks">Get it free &rarr;</a></p>
       </div>
       <div class="card">
+        <div class="price">$99<span> CAD</span></div>
+        <p class="period">one-time</p>
+        <h3>The install</h3>
+        <p class="feature">Your phone system installed and handed over &mdash; conversion from 3CX, FreePBX, Asterisk or a hosted provider included. Your box, your data, no per-seat licence.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">See what&rsquo;s included &rarr;</a></p>
+      </div>
+      <div class="card">
         <div class="price">$499<span> CAD</span></div>
-        <p class="period">one-time</p>
-        <h3>The build session</h3>
-        <p class="feature">Live, on your system. We build or fix it together while you watch and learn. Resolution, or no charge.</p>
+        <p class="period">one sitting</p>
+        <h3>The working session</h3>
+        <p class="feature">Something is broken right now. We fix it live on your system while you watch and learn. One sitting, resolution or no charge.</p>
         <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">Book it &rarr;</a></p>
       </div>
       <div class="card">
-        <div class="price">$5,500</div>
-        <p class="period">one-time</p>
-        <h3>Greg deployed</h3>
-        <p class="feature">The deep pair-build: we deploy Greg on your box with you. Production-ready, taught to you, wired to Echo.</p>
-        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">Book it &rarr;</a></p>
-      </div>
-      <div class="card">
-        <div class="price">$750<span>/mo</span></div>
+        <div class="price">$299<span>/mo</span></div>
         <p class="period">augment your team</p>
         <h3>First-responder</h3>
-        <p class="feature">Greg joins your Slack, Mattermost, or the conference call. A tenth of an engineer, 24/7.</p>
-        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See caretaking &rarr;</a></p>
-      </div>
-      <div class="card">
-        <div class="price">$999<span>/mo</span></div>
-        <p class="period">replace the on-call</p>
-        <h3>The night-shift engineer</h3>
-        <p class="feature">For shops where Greg <em>is</em> the on-call engineer. Escalations stay human.</p>
-        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See caretaking &rarr;</a></p>
+        <p class="feature">Greg installed on your box &mdash; setup included, no project fee &mdash; then in your Slack, Mattermost, or on the conference call. A fraction of an engineer, 24/7.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">What the seat covers &rarr;</a></p>
       </div>
     </div>
-    <p class="fine">Services catch what he can&rsquo;t: the build session ($499 CAD) for the quick fires &middot; the deep pair-build ($5,500 CAD) for the big builds &middot; caretaking so it stays fixed.</p>
+    <p class="fine">Services catch what he can&rsquo;t: the $99 install for a clean hand-over &middot; the $499 working session for the quick fires &middot; the $299 seat, setup included, so it stays fixed.</p>
   </div>
 </section>
 
@@ -377,7 +377,7 @@
     <p class="lede">If Greg doesn&rsquo;t answer your phone system&rsquo;s questions with receipts, you walk away owing nothing.</p>
     <div class="cta-row" style="justify-content:center">
       <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Hire%20Greg">Hire Greg</a>
-      <a class="btn btn-ghost" href="index.html#interface">See it in action</a>
+      <a class="btn btn-ghost" href="https://greg.echoguard.ca/#interface">See it in action</a>
       <a class="btn btn-ghost" href="https://forge.echoguard.ca/">Build your own voice AI</a>
       <a class="btn btn-ghost" href="https://relay.echoguard.ca/">The relay</a>
     </div>
@@ -385,7 +385,7 @@
     <div id="reach-greg" style="margin:20px 0 2px"></div>
     <p class="fine" style="margin-bottom:16px">Prefer to talk to a human right now? <strong>Reach Greg from this page</strong> &mdash; his desk phone and his cell ring over SIP at the same time. No queue, no call center, no charge. While you wait you&rsquo;ll hear one of his songs; leave a message and it lands in his inbox, transcribed.</p>
     <div class="cta-row" style="justify-content:center;margin-top:14px">
-      <a class="btn btn-primary" href="https://voip.echoguard.ca/order.html#build">Book a build session &mdash; $499 CAD</a>
+      <a class="btn btn-primary" href="https://voip.echoguard.ca/order.html#build">Book a working session &mdash; $499 CAD</a>
       <a class="btn btn-ghost" href="https://voip.echoguard.ca">The knowledge library &rarr;</a>
     </div>
     <div style="margin:28px auto 0; max-width:760px; text-align:center">
@@ -446,14 +446,14 @@
 
       </script>
     </div>
-    <p class="fine" style="margin-top:12px">Not ready for a session? The guides are free, the answer keys are pay-what-you-can, and the build session is $499 CAD &mdash; resolution, or no charge. Full library: <a href="https://voip.echoguard.ca">voip.echoguard.ca</a>.</p>
+    <p class="fine" style="margin-top:12px">Not ready for a session? The guides are free, the answer keys are pay-what-you-can, and the working session is $499 CAD &mdash; resolution, or no charge. Full library: <a href="https://voip.echoguard.ca">voip.echoguard.ca</a>.</p>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <span>Greg by <a href="https://echoguard.ca">EchoGuard Communications</a> &mdash; the engineer you don&rsquo;t have to hire, on your box.</span>
-    <span>Text <a href="tel:+13438434440" style="color:inherit;text-decoration:none;">343-843-4440</a></span> <span style="opacity:.55">&middot;</span> <span><a href="mailto:kaiel@echoguard.ca" style="color:inherit;text-decoration:none;">kaiel@echoguard.ca</a></span> <span style="opacity:.55">&middot;</span> <span>greg.echoguard.ca</span> <span style="opacity:.55">&middot;</span> <a href="/login.html" style="color:inherit;text-decoration:none;">Beta sign in</a> <span style="opacity:.55">&middot;</span> <span>The knowledge is free. <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=shido6%40gmail.com&amp;item_name=Greg%20%E2%80%94%20keep%20it%20alive&amp;currency_code=CAD" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Keep it alive</a> &mdash; optional, no list, no gate.</span>
+    <span>Greg by <a href="https://echoguard.ca">EchoGuard Communications</a> &mdash; the engineer you always wanted, built-in.</span>
+    <span>Text <a href="tel:+13438434440" style="color:inherit;text-decoration:none;">343-843-4440</a></span> <span style="opacity:.55">&middot;</span> <span><a href="mailto:kai.el@echoguard.ca" style="color:inherit;text-decoration:none;">kai.el@echoguard.ca</a></span> <span style="opacity:.55">&middot;</span> <span>greg.echoguard.ca</span> <span style="opacity:.55">&middot;</span> <a href="/login.html" style="color:inherit;text-decoration:none;">Beta sign in</a> <span style="opacity:.55">&middot;</span> <span>The knowledge is free. <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=shido6%40gmail.com&amp;item_name=Greg%20%E2%80%94%20keep%20it%20alive&amp;currency_code=CAD" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Keep it alive</a> &mdash; optional, no list, no gate.</span>
   </div>
 </footer>
 
