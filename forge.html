@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Forge &mdash; Build your own voice AI | EchoGuard.ca</title>
+<link rel="canonical" href="https://echo.s2insights.cloud/forge.html">
 <meta name="description" content="Renting a voice AI by the minute? Forge builds your agent in your cloud or on your Linux box &mdash; built with you, taught to you, owned by you. No per-minute rent, no lock-in, no $90k engineer.">
 <style>
   :root {
@@ -91,6 +92,8 @@
 
   /* grids */
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  /* four rungs: two-by-two, so no card sits alone on a second row */
+  #ladder .grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px;
   }
@@ -302,7 +305,7 @@
       <div class="step-num">3</div>
       <div class="step-body">
         <h3>You learn it, hands-on</h3>
-        <p>Pair-build: every config, every prompt, every dialplan line, explained as it&rsquo;s written. Walk away knowing the whole thing end to end &mdash; your team can change the agent themselves.</p>
+        <p>Built together: every config, every prompt, every dialplan line, explained as it&rsquo;s written. Walk away knowing the whole thing end to end &mdash; your team can change the agent themselves.</p>
       </div>
     </div>
     <div class="step">
@@ -324,8 +327,8 @@
     </div>
     <div class="grid">
       <div class="card">
-        <h3>A tenth of the price</h3>
-        <p>A telecom engineer runs $90k&ndash;$120k a year &mdash; about $7,500/mo before benefits, tools, and on-call. The Forge pair-build is $5,500 one-time: under one month of an engineer.</p>
+        <h3>A fraction of the price</h3>
+        <p>A telecom engineer runs $90k&ndash;$120k a year &mdash; about $7,500 a month before benefits, tools, and on-call. The $499 working session is a day or two of that; the $299 seat is a fraction of the salary.</p>
       </div>
       <div class="card">
         <h3>The skill stays</h3>
@@ -366,7 +369,7 @@
   <div class="wrap">
     <div class="center">
       <h2>The ladder</h2>
-      <p class="lede">From a free recipe to a fully built agent in your cloud. Every rung is my time &mdash; and every rung works on your system, or you don&rsquo;t pay.</p>
+      <p class="lede">From a free recipe to a seat on your team. Every rung is my time &mdash; nothing here is five figures, and every rung works on your system, or you don&rsquo;t pay.</p>
     </div>
     <div class="grid">
       <div class="card">
@@ -377,35 +380,28 @@
         <p style="margin-top:10px"><a href="https://voip.echoguard.ca/individuals.html#playbooks">Get it free &rarr;</a></p>
       </div>
       <div class="card">
+        <div class="price">$99<span> CAD</span></div>
+        <p class="period">one-time</p>
+        <h3>The install</h3>
+        <p class="feature">AiPBX installed on your own server and proven with real calls &mdash; conversion from 3CX, FreePBX, Asterisk or a hosted provider included.</p>
+        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See what&rsquo;s included &rarr;</a></p>
+      </div>
+      <div class="card">
         <div class="price">$499<span> CAD</span></div>
-        <p class="period">one-time</p>
-        <h3>The build session</h3>
-        <p class="feature">Live, on your system. We build or fix it together while you watch and learn. Resolution, or no charge.</p>
+        <p class="period">one sitting</p>
+        <h3>The working session</h3>
+        <p class="feature">Live, on your system. I come in and we build or fix it together while you watch and learn. Resolution, or no charge.</p>
         <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">Book it &rarr;</a></p>
       </div>
       <div class="card">
-        <div class="price">$5,500</div>
-        <p class="period">one-time</p>
-        <h3>The pair-build</h3>
-        <p class="feature">We build your agent in your cloud or on your Linux box, with you. Production-ready, taught to you, wired to Echo.</p>
-        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#build">Book it &rarr;</a></p>
-      </div>
-      <div class="card">
-        <div class="price">$750<span>/mo</span></div>
-        <p class="period">optional care</p>
-        <h3>The keeper</h3>
-        <p class="feature">We watch, tune, and jump in. The Greg option, for your agent.</p>
-        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See caretaking &rarr;</a></p>
-      </div>
-      <div class="card">
-        <div class="price">$999<span>/mo</span></div>
-        <p class="period">the front line</p>
-        <h3>The full shift</h3>
-        <p class="feature">Around-the-clock care for shops where the agent is the front line. Escalations stay human.</p>
-        <p style="margin-top:10px"><a href="https://voip.echoguard.ca/order.html#services">See caretaking &rarr;</a></p>
+        <div class="price">$299<span>/mo</span></div>
+        <p class="period">augment your team</p>
+        <h3>The seat</h3>
+        <p class="feature">Greg installed on your box, setup included, no project fee &mdash; then in your Slack, Mattermost, or on the conference call. A fraction of an engineer, 24/7.</p>
+        <p style="margin-top:10px"><a href="https://greg.echoguard.ca/greg.html#pricing">What the seat covers &rarr;</a></p>
       </div>
     </div>
-    <p class="fine">Want it done <em>for</em> you, not <em>with</em> you? The deep pair-build is $5,500 CAD &mdash; production-ready, taught to you, wired to Echo. Book it at <a href="https://voip.echoguard.ca/order.html#build">voip.echoguard.ca</a>.</p>
+    <p class="fine">Services catch what the recipe can&rsquo;t: the $99 install for a clean hand-over &middot; the $499 working session for the quick fires &middot; the $299/mo seat, setup included, so it stays fixed.</p>
   </div>
 </section>
 
@@ -450,7 +446,7 @@
     <div class="cta-row" style="justify-content:center">
       <a class="btn btn-primary" href="mailto:sales@echoguard.ca?subject=Forge%20%E2%80%94%20Build%20my%20own%20voice%20AI">Start forging</a>
       <a class="btn btn-ghost" href="https://voip.echoguard.ca/individuals.html#playbooks">Get the recipe &mdash; free</a>
-      <a class="btn btn-ghost" href="https://voip.echoguard.ca/order.html#services">Monthly care &mdash; $750/mo</a>
+      <a class="btn btn-ghost" href="https://voip.echoguard.ca/order.html#services">The monthly seat &mdash; $299/mo</a>
       <a class="btn btn-ghost" href="https://echo.echoguard.ca/">Meet Echo</a>
       <a class="btn btn-ghost" href="https://greg.echoguard.ca/">Meet Greg</a>
     </div>
